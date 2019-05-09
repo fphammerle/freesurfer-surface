@@ -1,0 +1,15 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = true
+name = "pypi"
+
+[packages]
+freesurfer-surface = {editable = true, path = "./.."}
+pandas = "<1"
+notebook = "<6"
+"ed0a5ba" = {editable = true, path = "./.."}
+
+[dev-packages]
+
+[requires]
+python_version = "3"
