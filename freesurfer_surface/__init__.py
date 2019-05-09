@@ -1,5 +1,5 @@
 """
-Python Library to Read Surface Files in Freesurfer's TriangularSurface Format
+Python Library to Read and Write Surface Files in Freesurfer's TriangularSurface Format
 
 compatible with Freesurfer's MRISwriteTriangularSurface()
 https://github.com/freesurfer/freesurfer/blob/release_6_0_0/include/mrisurf.h#L1281
@@ -15,6 +15,7 @@ https://surfer.nmr.mgh.harvard.edu/
 """
 
 import collections
+import datetime
 import re
 import struct
 import typing
@@ -35,8 +36,12 @@ class Surface:
     _TAG_OLD_SURF_GEOM = b'\x00\x00\x00\x14'
     _TAG_OLD_USEREALRAS = b'\x00\x00\x00\x02'
 
+    # TODO set locale
+    _DATETIME_FORMAT = '%a %b %d %H:%M:%S %Y'
+
     def __init__(self):
         self.creator = None
+        self.creation_datetime = None
         self.vertices = []
         self.triangles_vertex_indices = []
         # self._triangles = []
@@ -59,8 +64,10 @@ class Surface:
 
     def _read_triangular(self, stream: typing.BinaryIO):
         assert stream.read(3) == self._MAGIC_NUMBER
-        self.creator = re.match(rb'^created by (\w+) on .* \d{4}\n',
-                                stream.readline()).groups()
+        self.creator, creation_dt_str = re.match(rb'^created by (\w+) on (.* \d{4})\n',
+                                                 stream.readline()).groups()
+        self.creation_datetime = datetime.datetime.strptime(creation_dt_str.decode(),
+                                                            self._DATETIME_FORMAT)
         assert stream.read(1) == b'\n'
         # fwriteInt
         # https://github.com/freesurfer/freesurfer/blob/release_6_0_0/utils/fio.c#L290
@@ -89,3 +96,27 @@ class Surface:
             # pylint: disable=protected-access
             surface._read_triangular(surface_file)
         return surface
+
+    def write_triangular(self, surface_file_path: str,
+                         creation_datetime: typing.Optional[datetime.datetime] = None):
+        if creation_datetime is None:
+            creation_datetime = datetime.datetime.now()
+        with open(surface_file_path, 'wb') as surface_file:
+            surface_file.write(
+                self._MAGIC_NUMBER
+                + b'created by ' + self.creator
+                + b' on ' + creation_datetime.strftime(self._DATETIME_FORMAT).encode()
+                + b'\n\n'
+                + struct.pack('>II', len(self.vertices), len(self.triangles_vertex_indices))
+            )
+            for vertex in self.vertices:
+                surface_file.write(struct.pack('>fff', *vertex))
+            for triangle_vertex_indices in self.triangles_vertex_indices:
+                surface_file.write(struct.pack('>III', *triangle_vertex_indices))
+            surface_file.write(self._TAG_OLD_USEREALRAS
+                               + struct.pack('>I', 1 if self.using_old_real_ras else 0))
+            surface_file.write(self._TAG_OLD_SURF_GEOM
+                               + b''.join(self.volume_geometry_info))
+            for command_line in self.command_lines:
+                surface_file.write(self._TAG_CMDLINE + struct.pack('>Q', len(command_line) + 1)
+                                   + command_line + b'\0')
