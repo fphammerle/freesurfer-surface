@@ -20,7 +20,9 @@ https://surfer.nmr.mgh.harvard.edu/
 """
 
 import collections
+import contextlib
 import datetime
+import locale
 import re
 import struct
 import typing
@@ -29,6 +31,23 @@ try:
     from freesurfer_surface.version import __version__
 except ImportError:  # pragma: no cover
     __version__ = None
+
+
+class UnsupportedLocaleSettingError(locale.Error):
+    pass
+
+
+@contextlib.contextmanager
+def setlocale(temporary_locale):
+    primary_locale = locale.setlocale(locale.LC_ALL)
+    try:
+        yield locale.setlocale(locale.LC_ALL, temporary_locale)
+    except locale.Error as exc:
+        if str(exc) == 'unsupported locale setting':
+            raise UnsupportedLocaleSettingError(temporary_locale)
+        raise exc
+    finally:
+        locale.setlocale(locale.LC_ALL, primary_locale)
 
 Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
 
@@ -41,7 +60,6 @@ class Surface:
     _TAG_OLD_SURF_GEOM = b'\x00\x00\x00\x14'
     _TAG_OLD_USEREALRAS = b'\x00\x00\x00\x02'
 
-    # TODO set locale
     _DATETIME_FORMAT = '%a %b %d %H:%M:%S %Y'
 
     def __init__(self):
@@ -49,7 +67,6 @@ class Surface:
         self.creation_datetime = None
         self.vertices = []
         self.triangles_vertex_indices = []
-        # self._triangles = []
         self.using_old_real_ras = False
         self.volume_geometry_info = None
         self.command_lines = []
@@ -71,8 +88,9 @@ class Surface:
         assert stream.read(3) == self._MAGIC_NUMBER
         self.creator, creation_dt_str = re.match(rb'^created by (\w+) on (.* \d{4})\n',
                                                  stream.readline()).groups()
-        self.creation_datetime = datetime.datetime.strptime(creation_dt_str.decode(),
-                                                            self._DATETIME_FORMAT)
+        with setlocale('C'):
+            self.creation_datetime = datetime.datetime.strptime(creation_dt_str.decode(),
+                                                                self._DATETIME_FORMAT)
         assert stream.read(1) == b'\n'
         # fwriteInt
         # https://github.com/freesurfer/freesurfer/blob/release_6_0_0/utils/fio.c#L290
@@ -104,12 +122,15 @@ class Surface:
 
     def _triangular_creation_datetime_strftime(self) -> bytes:
         fmt = self._DATETIME_FORMAT.replace('%d', '{:>2}'.format(self.creation_datetime.day))
-        return self.creation_datetime.strftime(fmt).encode()
+        with setlocale('C'):
+            return self.creation_datetime.strftime(fmt).encode()
 
     def write_triangular(self, surface_file_path: str,
                          creation_datetime: typing.Optional[datetime.datetime] = None):
         if creation_datetime is None:
-            creation_datetime = datetime.datetime.now()
+            self.creation_datetime = datetime.datetime.now()
+        else:
+            self.creation_datetime = creation_datetime
         with open(surface_file_path, 'wb') as surface_file:
             surface_file.write(
                 self._MAGIC_NUMBER

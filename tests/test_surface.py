@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from freesurfer_surface import Surface, Vertex
+from freesurfer_surface import setlocale, Surface, Vertex
 
 
 SUBJECTS_DIR = os.path.join(os.path.dirname(__file__), 'subjects')
@@ -54,6 +54,12 @@ def test_read_triangular():
         b'  ']
 
 
+def test_read_triangular_locale():
+    with setlocale('de_AT.utf8'):
+        surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    assert surface.creation_datetime == datetime.datetime(2019, 5, 9, 22, 37, 41)
+
+
 @pytest.mark.parametrize(('creation_datetime', 'expected_str'), [
     (datetime.datetime(2019, 5, 9, 22, 37, 41), b'Thu May  9 22:37:41 2019'),
     (datetime.datetime(2019, 4, 24, 23, 29, 22), b'Wed Apr 24 23:29:22 2019'),
@@ -94,6 +100,20 @@ def test_write_read_triangular_same(tmpdir):
                                       creation_datetime=expected_surface.creation_datetime)
     resulted_surface = Surface.read_triangular(output_path)
     assert vars(expected_surface) == vars(resulted_surface)
+
+
+def test_write_triangular_same_locale(tmpdir):
+    surface = Surface()
+    surface.creator = b'pytest'
+    surface.volume_geometry_info = tuple(b'?' for _ in range(8))
+    creation_datetime = datetime.datetime(2018, 12, 31, 21, 42)
+    output_path = tmpdir.join('surface')
+    with setlocale('de_AT.utf8'):
+        surface.write_triangular(output_path, creation_datetime=creation_datetime)
+    resulted_surface = Surface.read_triangular(output_path)
+    assert resulted_surface.creation_datetime == creation_datetime
+    with open(output_path, 'rb') as output_file:
+        assert output_file.read().split(b' on ')[1].startswith(b'Mon Dec 31 21:42:00 2018\n')
 
 
 def test_add_vertex():
