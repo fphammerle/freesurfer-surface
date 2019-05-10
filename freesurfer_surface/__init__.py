@@ -86,7 +86,7 @@ class Surface:
         assert stream.read(4) == self._TAG_OLD_SURF_GEOM
         # writeVolGeom
         # https://github.com/freesurfer/freesurfer/blob/release_6_0_0/utils/transform.c#L368
-        self.volume_geometry_info = [stream.readline() for _ in range(8)]
+        self.volume_geometry_info = tuple(stream.readline() for _ in range(8))
         self.command_lines = list(self._read_cmdlines(stream))
 
     @classmethod

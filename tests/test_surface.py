@@ -17,7 +17,7 @@ def test_read_triangular():
     assert len(surface.vertices) == 155622
     assert len(surface.triangles_vertex_indices) == 311240
     assert not surface.using_old_real_ras
-    assert surface.volume_geometry_info == [
+    assert surface.volume_geometry_info == (
         b'valid = 1  # volume info valid\n',
         b'filename = ../mri/filled-pretess255.mgz\n',
         b'volume = 256 256 256\n',
@@ -25,7 +25,7 @@ def test_read_triangular():
         b'xras   = -1.000000000000000e+00 0.000000000000000e+00 1.862645149230957e-09\n',
         b'yras   = 0.000000000000000e+00 -6.655682227574289e-09 -1.000000000000000e+00\n',
         b'zras   = 0.000000000000000e+00 1.000000000000000e+00 -8.300048648379743e-09\n',
-        b'cras   = -2.773597717285156e+00 1.566547393798828e+01 -7.504364013671875e+00\n']
+        b'cras   = -2.773597717285156e+00 1.566547393798828e+01 -7.504364013671875e+00\n')
     assert surface.command_lines == [
         b'mris_remove_intersection ../surf/lh.orig ../surf/lh.orig'
         b' ProgramVersion: $Name: stable6 $'
@@ -87,7 +87,7 @@ def test_write_read_triangular_same(tmpdir):
                                                  (0, 1, 3),
                                                  (3, 2, 1)]
     expected_surface.using_old_real_ras = False
-    expected_surface.volume_geometry_info = [b'?\n'] * 8
+    expected_surface.volume_geometry_info = tuple(b'?\n' for _ in range(8))
     expected_surface.command_lines = [b'?', b'!']
     output_path = tmpdir.join('surface')
     expected_surface.write_triangular(output_path,
