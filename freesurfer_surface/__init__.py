@@ -58,8 +58,7 @@ class Annotation:
 
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
-    def __init__(self):
-        self.vertex_values = {}
+    vertex_values: typing.Dict[int, int] = {}
 
     def _read(self, stream: typing.BinaryIO) -> None:
         # https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles
@@ -93,16 +92,14 @@ class Surface:
 
     _DATETIME_FORMAT = '%a %b %d %H:%M:%S %Y'
 
+    creator: typing.Optional[bytes] = None
+    creation_datetime: typing.Optional[datetime.datetime] = None
+    vertices: typing.List[Vertex] = []
+    triangles_vertex_indices: typing.List[typing.Tuple[int]] = []
+    using_old_real_ras: bool = False
+    volume_geometry_info: typing.Optional[typing.Tuple[bytes]] = None
+    command_lines: typing.List[bytes] = []
     annotation: typing.Optional[Annotation] = None
-
-    def __init__(self):
-        self.creator = None
-        self.creation_datetime = None
-        self.vertices = []
-        self.triangles_vertex_indices = []
-        self.using_old_real_ras = False
-        self.volume_geometry_info = None
-        self.command_lines = []
 
     @classmethod
     def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[str]:
