@@ -94,3 +94,14 @@ def test_write_read_triangular_same(tmpdir):
                                       creation_datetime=expected_surface.creation_datetime)
     resulted_surface = Surface.read_triangular(output_path)
     assert vars(expected_surface) == vars(resulted_surface)
+
+
+def test_add_vertex():
+    surface = Surface()
+    assert not surface.vertices
+    assert surface.add_vertex(Vertex(1.0, 1.5, 2.0)) == 0
+    assert len(surface.vertices) == 1
+    assert surface.vertices[0].anterior == pytest.approx(1.5)
+    assert surface.add_vertex(Vertex(-3.0, 0.0, 4.0)) == 1
+    assert len(surface.vertices) == 2
+    assert surface.vertices[1].right == pytest.approx(-3.0)

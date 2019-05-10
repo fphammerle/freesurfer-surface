@@ -9,9 +9,14 @@ https://raw.githubusercontent.com/freesurfer/freesurfer/release_6_0_0/utils/mris
 Freesurfer
 https://surfer.nmr.mgh.harvard.edu/
 
->>> from freesurfer_surface import Surface
+>>> from freesurfer_surface import Surface, Vertex
 >>>
 >>> surface = Surface.read_triangular('bert/surf/lh.pial'))
+>>>
+>>> vertex_index = surface.add_vertex(Vertex(0.0, -3.14, 21.42))
+>>> print(surface.vertices[vertex_index])
+>>>
+>>> surface.write_triangular('somewhere/else/lh.pial')
 """
 
 import collections
@@ -124,3 +129,7 @@ class Surface:
             for command_line in self.command_lines:
                 surface_file.write(self._TAG_CMDLINE + struct.pack('>Q', len(command_line) + 1)
                                    + command_line + b'\0')
+
+    def add_vertex(self, vertex: Vertex) -> int:
+        self.vertices.append(vertex)
+        return len(self.vertices) - 1
