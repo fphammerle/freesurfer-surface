@@ -3,10 +3,10 @@ import os
 
 import pytest
 
-from freesurfer_surface import setlocale, Surface, Vertex
+from freesurfer_surface import setlocale, Vertex, Annotation, Surface
 
+from conftest import SUBJECTS_DIR
 
-SUBJECTS_DIR = os.path.join(os.path.dirname(__file__), 'subjects')
 SURFACE_FILE_PATH = os.path.join(SUBJECTS_DIR, 'fabian', 'surf', 'lh.pial')
 
 
@@ -118,12 +118,12 @@ def test_write_triangular_same_locale(tmpdir):
 
 def test_load_annotation():
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
-    assert not surface.vertex_annotation_values
-    surface.load_annotation(os.path.join(SUBJECTS_DIR, 'fabian', 'label', 'lh.aparc.annot'))
-    assert len(surface.vertex_annotation_values) == 155622
-    assert surface.vertex_annotation_values[0] == (((100 << 8) + 20) << 8) + 220
-    assert surface.vertex_annotation_values[1] == (((100 << 8) + 20) << 8) + 220
-    assert surface.vertex_annotation_values[42] == (((140 << 8) + 30) << 8) + 20
+    assert not surface.annotation
+    surface.load_annotation_file(os.path.join(SUBJECTS_DIR, 'fabian',
+                                              'label', 'lh.aparc.annot'))
+    assert isinstance(surface.annotation, Annotation)
+    assert len(surface.annotation.vertex_values) == 155622
+    assert surface.annotation.vertex_values[0] == (((100 << 8) + 20) << 8) + 220
 
 
 def test_add_vertex():
