@@ -116,6 +116,16 @@ def test_write_triangular_same_locale(tmpdir):
         assert output_file.read().split(b' on ')[1].startswith(b'Mon Dec 31 21:42:00 2018\n')
 
 
+def test_load_annotation():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    assert not surface.vertex_annotation_values
+    surface.load_annotation(os.path.join(SUBJECTS_DIR, 'fabian', 'label', 'lh.aparc.annot'))
+    assert len(surface.vertex_annotation_values) == 155622
+    assert surface.vertex_annotation_values[0] == (((100 << 8) + 20) << 8) + 220
+    assert surface.vertex_annotation_values[1] == (((100 << 8) + 20) << 8) + 220
+    assert surface.vertex_annotation_values[42] == (((140 << 8) + 30) << 8) + 20
+
+
 def test_add_vertex():
     surface = Surface()
     assert not surface.vertices

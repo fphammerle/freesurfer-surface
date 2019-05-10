@@ -54,11 +54,14 @@ Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
 
 class Surface:
 
+    # pylint: disable=too-many-instance-attributes
+
     _MAGIC_NUMBER = b'\xff\xff\xfe'
 
     _TAG_CMDLINE = b'\x00\x00\x00\x03'
     _TAG_OLD_SURF_GEOM = b'\x00\x00\x00\x14'
     _TAG_OLD_USEREALRAS = b'\x00\x00\x00\x02'
+    _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
     _DATETIME_FORMAT = '%a %b %d %H:%M:%S %Y'
 
@@ -70,6 +73,7 @@ class Surface:
         self.using_old_real_ras = False
         self.volume_geometry_info = None
         self.command_lines = []
+        self.vertex_annotation_values = None
 
     @classmethod
     def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[str]:
@@ -150,6 +154,21 @@ class Surface:
             for command_line in self.command_lines:
                 surface_file.write(self._TAG_CMDLINE + struct.pack('>Q', len(command_line) + 1)
                                    + command_line + b'\0')
+
+    def load_annotation(self, annotation_file_path: str) -> None:
+        # https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles
+        with open(annotation_file_path, 'rb') as annotation_file:
+            annotations_num, = struct.unpack('>I', annotation_file.read(4))
+            assert annotations_num <= len(self.vertices)
+            annotations = (struct.unpack('>II', annotation_file.read(4 * 2))
+                           for _ in range(annotations_num))
+            self.vertex_annotation_values = {vertex_index: annotation_value
+                                             for vertex_index, annotation_value in annotations}
+            assert all(0 <= vertex_index < len(self.vertices)
+                       for vertex_index in self.vertex_annotation_values.keys())
+            assert all((annotation_value >> (8 * 3)) == 0
+                       for annotation_value in self.vertex_annotation_values.values())
+            assert annotation_file.read(4) == self._TAG_OLD_COLORTABLE
 
     def add_vertex(self, vertex: Vertex) -> int:
         self.vertices.append(vertex)
