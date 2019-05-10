@@ -97,6 +97,10 @@ class Surface:
             surface._read_triangular(surface_file)
         return surface
 
+    def _triangular_creation_datetime_strftime(self) -> bytes:
+        fmt = self._DATETIME_FORMAT.replace('%d', '{:>2}'.format(self.creation_datetime.day))
+        return self.creation_datetime.strftime(fmt).encode()
+
     def write_triangular(self, surface_file_path: str,
                          creation_datetime: typing.Optional[datetime.datetime] = None):
         if creation_datetime is None:
@@ -105,7 +109,7 @@ class Surface:
             surface_file.write(
                 self._MAGIC_NUMBER
                 + b'created by ' + self.creator
-                + b' on ' + creation_datetime.strftime(self._DATETIME_FORMAT).encode()
+                + b' on ' + self._triangular_creation_datetime_strftime()
                 + b'\n\n'
                 + struct.pack('>II', len(self.vertices), len(self.triangles_vertex_indices))
             )
