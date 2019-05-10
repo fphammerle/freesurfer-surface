@@ -11,3 +11,5 @@ def test_load_annotation():
     assert annotation.vertex_values[0] == (((100 << 8) + 20) << 8) + 220
     assert annotation.vertex_values[1] == (((100 << 8) + 20) << 8) + 220
     assert annotation.vertex_values[42] == (((140 << 8) + 30) << 8) + 20
+    assert annotation.colortable_path == b'/autofs/space/tanha_002/users/greve' \
+                                         b'/fsdev.build/average/colortable_desikan_killiany.txt'

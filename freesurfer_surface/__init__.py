@@ -59,6 +59,7 @@ class Annotation:
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
     vertex_values: typing.Dict[int, int] = {}
+    colortable_path: typing.Optional[bytes] = None
 
     def _read(self, stream: typing.BinaryIO) -> None:
         # https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles
@@ -70,6 +71,10 @@ class Annotation:
         assert all((annotation_value >> (8 * 3)) == 0
                    for annotation_value in self.vertex_values.values())
         assert stream.read(4) == self._TAG_OLD_COLORTABLE
+        colortable_version, _, filename_length = struct.unpack('>III', stream.read(4 * 3))
+        assert colortable_version > 0  # new version
+        self.colortable_path = stream.read(filename_length - 1)
+        assert stream.read(1) == b'\0'
 
     @classmethod
     def read(cls, annotation_file_path: str) -> 'Annotation':
