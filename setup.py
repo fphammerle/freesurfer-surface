@@ -49,7 +49,9 @@ setuptools.setup(
             'freesurfer-annotation-labels = freesurfer_surface.__main__:annotation_labels',
         ],
     },
-    install_requires=[],
+    install_requires=[
+        'numpy<2',
+    ],
     setup_requires=[
         'setuptools_scm',
     ],
