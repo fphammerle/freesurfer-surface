@@ -19,6 +19,7 @@ def test_color_code(red, green, blue, transparency, color_code):
     label.transparency = transparency
     assert color_code == label.color_code
 
+
 def test_color_code_unknown():
     label = Label()
     label.index = 0
@@ -47,3 +48,14 @@ def test_hex_color_code(red, green, blue, hex_color_code):
     label.green = green
     label.blue = blue
     assert hex_color_code == label.hex_color_code.lower()
+
+
+def test_str():
+    label = Label()
+    label.index = 24
+    label.name = 'precentral'
+    label.red = 60
+    label.green = 20
+    label.blue = 220
+    label.transparency = 0
+    assert str(label) == 'Label(name=precentral, index=24, color=#3c14dc)'

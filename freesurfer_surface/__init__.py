@@ -85,6 +85,10 @@ class Label:
     def hex_color_code(self) -> str:
         return '#{:02x}{:02x}{:02x}'.format(self.red, self.green, self.blue)
 
+    def __str__(self) -> str:
+        return 'Label(name={}, index={}, color={})'.format(
+            self.name, self.index, self.hex_color_code)
+
 
 class Annotation:
 
