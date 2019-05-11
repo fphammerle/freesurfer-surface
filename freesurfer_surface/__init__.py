@@ -63,7 +63,7 @@ def setlocale(temporary_locale):
 Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
 
 
-class _LineSegment:
+class _PolygonalCircuit:
 
     _VERTEX_INDICES_TYPE = typing.Tuple[int]
 
@@ -78,39 +78,32 @@ class _LineSegment:
 
     @vertex_indices.setter
     def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
-        assert len(indices) == 2
         self._vertex_indices = indices
 
-    def __eq__(self, other: '_Line') -> bool:
+    def __eq__(self, other: '_PolygonalCircuit') -> bool:
         return self.vertex_indices == other.vertex_indices
 
     def __hash__(self) -> int:
         return hash(self._vertex_indices)
 
+
+class _LineSegment(_PolygonalCircuit):
+
+    @_PolygonalCircuit.vertex_indices.setter
+    def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
+        assert len(indices) == 2
+        self._vertex_indices = indices
+
     def __repr__(self) -> str:
         return '_LineSegment(vertex_indices={})'.format(self.vertex_indices)
 
 
-class Triangle:
+class Triangle(_PolygonalCircuit):
 
-    _VERTEX_INDICES_TYPE = typing.Tuple[int]
-
-    _vertex_indices: _VERTEX_INDICES_TYPE
-
-    def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
-        self.vertex_indices = vertex_indices
-
-    @property
-    def vertex_indices(self):
-        return self._vertex_indices
-
-    @vertex_indices.setter
-    def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
+    @_PolygonalCircuit.vertex_indices.setter
+    def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
         assert len(indices) == 3
         self._vertex_indices = indices
-
-    def __eq__(self, other: 'Triangle') -> bool:
-        return self.vertex_indices == other.vertex_indices
 
     def __repr__(self) -> str:
         return 'Triangle(vertex_indices={})'.format(self.vertex_indices)

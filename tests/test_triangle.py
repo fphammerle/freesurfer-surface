@@ -13,6 +13,18 @@ def test_init_invalid_indices_len():
         Triangle((0, 21, 42, 84))
 
 
+def test_reassign_vertex_indices():
+    triangle = Triangle((0, 21, 42))
+    triangle.vertex_indices = (1, 2, 3)
+    assert triangle.vertex_indices == (1, 2, 3)
+
+
+def test_reassign_vertex_indices_invalid_len():
+    triangle = Triangle((0, 21, 42))
+    with pytest.raises(Exception):
+        triangle.vertex_indices = (1, 2, 3, 4)
+
+
 def test_eq():
     assert Triangle((0, 1, 2)) == Triangle((0, 1, 2))
     # pylint: disable=unneeded-not
