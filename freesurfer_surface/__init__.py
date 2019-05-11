@@ -84,9 +84,8 @@ class Annotation:
 
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
-    # TODO rename vertex_color_codes
     # TODO replace with vertex_label_index
-    vertex_values: typing.Dict[int, int] = {}
+    vertex_color_codes: typing.Dict[int, int] = {}
     colortable_path: typing.Optional[bytes] = None
     # TODO dict
     labels: typing.List[Label] = None
@@ -106,8 +105,8 @@ class Annotation:
         annotations_num, = struct.unpack('>I', stream.read(4))
         annotations = (struct.unpack('>II', stream.read(4 * 2))
                        for _ in range(annotations_num))
-        self.vertex_values = {vertex_index: color_code
-                              for vertex_index, color_code in annotations}
+        self.vertex_color_codes = {vertex_index: color_code
+                                   for vertex_index, color_code in annotations}
         assert stream.read(4) == self._TAG_OLD_COLORTABLE
         colortable_version, _, filename_length = struct.unpack('>III', stream.read(4 * 3))
         assert colortable_version > 0  # new version
@@ -117,7 +116,7 @@ class Annotation:
         self.labels = [self._read_label(stream) for _ in range(labels_num)]
         label_color_codes = set(l.color_code for l in self.labels)
         assert all(vertex_color_code in label_color_codes
-                   for vertex_color_code in self.vertex_values.values())
+                   for vertex_color_code in self.vertex_color_codes.values())
         assert not stream.read(1)
 
     @classmethod
@@ -232,9 +231,9 @@ class Surface:
 
     def load_annotation_file(self, annotation_file_path: str) -> None:
         annotation = Annotation.read(annotation_file_path)
-        assert len(annotation.vertex_values) <= len(self.vertices)
+        assert len(annotation.vertex_color_codes) <= len(self.vertices)
         assert all(0 <= vertex_index < len(self.vertices)
-                   for vertex_index in annotation.vertex_values.keys())
+                   for vertex_index in annotation.vertex_color_codes.keys())
         self.annotation = annotation
 
     def add_vertex(self, vertex: Vertex) -> int:
