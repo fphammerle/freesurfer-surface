@@ -62,14 +62,20 @@ class Label:
     index: int
     name: str
     red: int
-    blue: int
     green: int
+    blue: int
     transparency: int
 
     @property
-    def color_code(self):
-        return int.from_bytes((self.transparency, self.red, self.green, self.blue),
-                              byteorder='big', signed=False)
+    def color_code(self) -> int:
+        if self.index == 0: # unknown
+            return 0
+        return int.from_bytes((self.red, self.green, self.blue, self.transparency),
+                              byteorder='little', signed=False)
+
+    @property
+    def hex_color_code(self) -> str:
+        return '#{:02x}{:02x}{:02x}'.format(self.red, self.green, self.blue)
 
 
 class Annotation:
@@ -78,6 +84,8 @@ class Annotation:
 
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
+    # TODO rename vertex_color_codes
+    # TODO replace with vertex_label_index
     vertex_values: typing.Dict[int, int] = {}
     colortable_path: typing.Optional[bytes] = None
     # TODO dict
@@ -86,10 +94,10 @@ class Annotation:
     @staticmethod
     def _read_label(stream: typing.BinaryIO) -> Label:
         label = Label()
-        label.index, name_length = struct.unpack('>II', stream.read(4*2))
+        label.index, name_length = struct.unpack('>II', stream.read(4 * 2))
         label.name = stream.read(name_length - 1).decode()
         assert stream.read(1) == b'\0'
-        label.red, label.blue, label.green, label.transparency \
+        label.red, label.green, label.blue, label.transparency \
             = struct.unpack('>IIII', stream.read(4 * 4))
         return label
 
@@ -98,10 +106,8 @@ class Annotation:
         annotations_num, = struct.unpack('>I', stream.read(4))
         annotations = (struct.unpack('>II', stream.read(4 * 2))
                        for _ in range(annotations_num))
-        self.vertex_values = {vertex_index: annotation_value
-                              for vertex_index, annotation_value in annotations}
-        assert all((annotation_value >> (8 * 3)) == 0
-                   for annotation_value in self.vertex_values.values())
+        self.vertex_values = {vertex_index: color_code
+                              for vertex_index, color_code in annotations}
         assert stream.read(4) == self._TAG_OLD_COLORTABLE
         colortable_version, _, filename_length = struct.unpack('>III', stream.read(4 * 3))
         assert colortable_version > 0  # new version
@@ -109,6 +115,9 @@ class Annotation:
         assert stream.read(1) == b'\0'
         labels_num, = struct.unpack('>I', stream.read(4))
         self.labels = [self._read_label(stream) for _ in range(labels_num)]
+        label_color_codes = set(l.color_code for l in self.labels)
+        assert all(vertex_color_code in label_color_codes
+                   for vertex_color_code in self.vertex_values.values())
         assert not stream.read(1)
 
     @classmethod

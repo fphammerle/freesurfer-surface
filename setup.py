@@ -44,6 +44,11 @@ setuptools.setup(
         'Topic :: Utilities',
     ],
     packages=setuptools.find_packages(),
+    entry_points={
+        'console_scripts': [
+            'freesurfer-annotation-labels = freesurfer_surface.__main__:annotation_labels',
+        ],
+    },
     install_requires=[],
     setup_requires=[
         'setuptools_scm',
