@@ -149,3 +149,17 @@ def test__find_label_border_segments():
         for other_vertex_index in [32064, 33449, 33455, 33449, 33455]:
             assert _LineSegment((other_vertex_index, border_vertex_index)) not in border_segments
             assert _LineSegment((border_vertex_index, other_vertex_index)) not in border_segments
+
+
+def test_find_label_border_polygonal_chains():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    surface.load_annotation_file(ANNOTATION_FILE_PATH)
+    precentral_label, = filter(lambda l: l.name == 'precentral',
+                               surface.annotation.labels.values())
+    border_chain, = surface.find_label_border_polygonal_chains(precentral_label)
+    vertex_indices = list(border_chain.vertex_indices)
+    assert len(vertex_indices) == 418
+    min_index = vertex_indices.index(min(vertex_indices))
+    vertex_indices_normalized = vertex_indices[min_index:] + vertex_indices[:min_index]
+    assert vertex_indices_normalized[:4] == [32065, 32072, 32073, 32080]
+    assert vertex_indices_normalized[-4:] == [36281, 34870, 33454, 33450]

@@ -355,3 +355,25 @@ class Surface:
             ))
             if len(border_vertex_indices) == 2:
                 yield _LineSegment(border_vertex_indices)
+
+    def find_label_border_polygonal_chains(self, label: Label) -> typing.Iterator[PolygonalChain]:
+        segments = set(self._find_label_border_segments(label))
+        available_chains = collections.deque(PolygonalChain(segment.vertex_indices)
+                                             for segment in segments)
+        # irrespective of its poor performance,
+        # we keep this approach since it's easy to read and fast enough
+        while available_chains:
+            chain = available_chains.pop()
+            last_chains_len = None
+            while last_chains_len != len(available_chains):
+                last_chains_len = len(available_chains)
+                checked_chains = collections.deque()
+                while available_chains:
+                    potential_neighbour = available_chains.pop()
+                    try:
+                        chain.connect(potential_neighbour)
+                    except PolygonalChainsNotOverlapingError:
+                        checked_chains.append(potential_neighbour)
+                available_chains = checked_chains
+            assert all((segment in segments) for segment in chain.segments())
+            yield chain
