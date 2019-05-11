@@ -1,6 +1,16 @@
 ## Usage
 
-### List Labels in Annotation Files
+### List Labels in Annotation File
+
+```python
+from freesurfer_surface import Annotation
+
+annotation = Annotation.read('tests/subjects/fabian/label/lh.aparc.annot')
+for label in annotation.labels.values():
+    print(label.index, label.hex_color_code, label.name)
+```
+
+or
 
 ```sh
 $ freesurfer-annotation-labels tests/subjects/fabian/label/lh.aparc.annot
