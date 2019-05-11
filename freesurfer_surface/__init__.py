@@ -78,10 +78,16 @@ class _PolygonalCircuit:
     @vertex_indices.setter
     def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
         # pylint: disable=attribute-defined-outside-init
-        self._vertex_indices = indices
+        self._vertex_indices = tuple(indices)
+
+    def _normalize(self) -> '_PolygonalCircuit':
+        min_vertex_index_index = self.vertex_indices.index(min(self.vertex_indices))
+        return type(self)(self.vertex_indices[min_vertex_index_index:]
+                          + self.vertex_indices[:min_vertex_index_index])
 
     def __eq__(self, other: '_PolygonalCircuit') -> bool:
-        return self.vertex_indices == other.vertex_indices
+        # pylint: disable=protected-access
+        return self._normalize().vertex_indices == other._normalize().vertex_indices
 
     def __hash__(self) -> int:
         return hash(self._vertex_indices)
@@ -94,7 +100,7 @@ class _LineSegment(_PolygonalCircuit):
     def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
         assert len(indices) == 2
         # pylint: disable=attribute-defined-outside-init
-        self._vertex_indices = indices
+        self._vertex_indices = tuple(indices)
 
     def __repr__(self) -> str:
         return '_LineSegment(vertex_indices={})'.format(self.vertex_indices)
@@ -107,7 +113,7 @@ class Triangle(_PolygonalCircuit):
     def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
         assert len(indices) == 3
         # pylint: disable=attribute-defined-outside-init
-        self._vertex_indices = indices
+        self._vertex_indices = tuple(indices)
 
     def __repr__(self) -> str:
         return 'Triangle(vertex_indices={})'.format(self.vertex_indices)

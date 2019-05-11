@@ -27,6 +27,7 @@ def test_reassign_vertex_indices_invalid_len():
 
 def test_eq():
     assert Triangle((0, 1, 2)) == Triangle((0, 1, 2))
+    assert Triangle((0, 1, 2)) == Triangle((1, 2, 0))
     # pylint: disable=unneeded-not
     assert not Triangle((0, 1, 2)) == Triangle((0, 1, 4))
     assert not Triangle((0, 1, 2)) == Triangle((0, 4, 2))
