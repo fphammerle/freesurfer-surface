@@ -66,6 +66,11 @@ class Label:
     green: int
     transparency: int
 
+    @property
+    def color_code(self):
+        return int.from_bytes((self.transparency, self.red, self.green, self.blue),
+                              byteorder='big', signed=False)
+
 
 class Annotation:
 
