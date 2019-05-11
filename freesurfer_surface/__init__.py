@@ -86,6 +86,9 @@ class Triangle:
     def __eq__(self, other: 'Triangle') -> bool:
         return self.vertex_indices == other.vertex_indices
 
+    def __repr__(self) -> str:
+        return 'Triangle(vertex_indices={})'.format(self.vertex_indices)
+
 
 class Label:
 

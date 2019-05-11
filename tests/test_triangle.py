@@ -19,3 +19,7 @@ def test_eq():
     assert not Triangle((0, 1, 2)) == Triangle((0, 1, 4))
     assert not Triangle((0, 1, 2)) == Triangle((0, 4, 2))
     assert not Triangle((0, 1, 2)) == Triangle((4, 1, 2))
+
+
+def test_repr():
+    assert repr(Triangle((0, 1, 2))) == 'Triangle(vertex_indices=(0, 1, 2))'
