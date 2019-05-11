@@ -15,8 +15,10 @@ https://surfer.nmr.mgh.harvard.edu/
 >>>
 >>> vertex_index = surface.add_vertex(Vertex(0.0, -3.14, 21.42))
 >>> print(surface.vertices[vertex_index])
->>>
 >>> surface.write_triangular('somewhere/else/lh.pial')
+>>>
+>>> surface.load_annotation_file('bert/label/lh.aparc.annot')
+>>> print([label.name for label in surface.annotation.labels])
 """
 
 import collections
@@ -49,7 +51,20 @@ def setlocale(temporary_locale):
     finally:
         locale.setlocale(locale.LC_ALL, primary_locale)
 
+
 Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
+
+
+class Label:
+
+    # pylint: disable=too-few-public-methods
+
+    index: int
+    name: str
+    red: int
+    blue: int
+    green: int
+    transparency: int
 
 
 class Annotation:
@@ -60,6 +75,18 @@ class Annotation:
 
     vertex_values: typing.Dict[int, int] = {}
     colortable_path: typing.Optional[bytes] = None
+    # TODO dict
+    labels: typing.List[Label] = None
+
+    @staticmethod
+    def _read_label(stream: typing.BinaryIO) -> Label:
+        label = Label()
+        label.index, name_length = struct.unpack('>II', stream.read(4*2))
+        label.name = stream.read(name_length - 1).decode()
+        assert stream.read(1) == b'\0'
+        label.red, label.blue, label.green, label.transparency \
+            = struct.unpack('>IIII', stream.read(4 * 4))
+        return label
 
     def _read(self, stream: typing.BinaryIO) -> None:
         # https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles
@@ -75,6 +102,9 @@ class Annotation:
         assert colortable_version > 0  # new version
         self.colortable_path = stream.read(filename_length - 1)
         assert stream.read(1) == b'\0'
+        labels_num, = struct.unpack('>I', stream.read(4))
+        self.labels = [self._read_label(stream) for _ in range(labels_num)]
+        assert not stream.read(1)
 
     @classmethod
     def read(cls, annotation_file_path: str) -> 'Annotation':
