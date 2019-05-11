@@ -3,7 +3,7 @@ import os
 
 import pytest
 
-from freesurfer_surface import setlocale, Vertex, Annotation, Surface
+from freesurfer_surface import setlocale, Vertex, Triangle, Annotation, Surface
 
 from conftest import SUBJECTS_DIR
 
@@ -15,7 +15,7 @@ def test_read_triangular():
     assert surface.creator == b'fabianpeter'
     assert surface.creation_datetime == datetime.datetime(2019, 5, 9, 22, 37, 41)
     assert len(surface.vertices) == 155622
-    assert len(surface.triangles_vertex_indices) == 311240
+    assert len(surface.triangles) == 311240
     assert not surface.using_old_real_ras
     assert surface.volume_geometry_info == (
         b'valid = 1  # volume info valid\n',
@@ -89,9 +89,9 @@ def test_write_read_triangular_same(tmpdir):
                                  Vertex(1.0, 2.0, 3.0),
                                  Vertex(2.0, 4.0, 6.0),
                                  Vertex(3.0, 5.0, 7.0)]
-    expected_surface.triangles_vertex_indices = [(0, 1, 2),
-                                                 (0, 1, 3),
-                                                 (3, 2, 1)]
+    expected_surface.triangles = [Triangle((0, 1, 2)),
+                                  Triangle((0, 1, 3)),
+                                  Triangle((3, 2, 1))]
     expected_surface.using_old_real_ras = False
     expected_surface.volume_geometry_info = tuple(b'?\n' for _ in range(8))
     expected_surface.command_lines = [b'?', b'!']

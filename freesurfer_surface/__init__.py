@@ -63,6 +63,30 @@ def setlocale(temporary_locale):
 Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
 
 
+class Triangle:
+
+    # pylint: disable=too-few-public-methods
+
+    _VERTEX_INDICES_TYPE = typing.Tuple[int]
+
+    _vertex_indices: _VERTEX_INDICES_TYPE
+
+    def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
+        self.vertex_indices = vertex_indices
+
+    @property
+    def vertex_indices(self):
+        return self._vertex_indices
+
+    @vertex_indices.setter
+    def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
+        assert len(indices) == 3
+        self._vertex_indices = indices
+
+    def __eq__(self, other: 'Triangle') -> bool:
+        return self.vertex_indices == other.vertex_indices
+
+
 class Label:
 
     # pylint: disable=too-few-public-methods
@@ -153,7 +177,7 @@ class Surface:
     creator: typing.Optional[bytes] = None
     creation_datetime: typing.Optional[datetime.datetime] = None
     vertices: typing.List[Vertex] = []
-    triangles_vertex_indices: typing.List[typing.Tuple[int]] = []
+    triangles: typing.List[Triangle] = []
     using_old_real_ras: bool = False
     volume_geometry_info: typing.Optional[typing.Tuple[bytes]] = None
     command_lines: typing.List[bytes] = []
@@ -185,11 +209,11 @@ class Surface:
         vertices_num, triangles_num = struct.unpack('>II', stream.read(4 * 2))
         self.vertices = [Vertex(*struct.unpack('>fff', stream.read(4 * 3)))
                          for _ in range(vertices_num)]
-        self.triangles_vertex_indices = [struct.unpack('>III', stream.read(4 * 3))
-                                         for _ in range(triangles_num)]
+        self.triangles = [Triangle(struct.unpack('>III', stream.read(4 * 3)))
+                          for _ in range(triangles_num)]
         assert all(vertex_idx < vertices_num
-                   for triangle_vertex_index in self.triangles_vertex_indices
-                   for vertex_idx in triangle_vertex_index)
+                   for triangle in self.triangles
+                   for vertex_idx in triangle.vertex_indices)
         assert stream.read(4) == self._TAG_OLD_USEREALRAS
         using_old_real_ras, = struct.unpack('>I', stream.read(4))
         assert using_old_real_ras in [0, 1], using_old_real_ras
@@ -225,12 +249,12 @@ class Surface:
                 + b'created by ' + self.creator
                 + b' on ' + self._triangular_creation_datetime_strftime()
                 + b'\n\n'
-                + struct.pack('>II', len(self.vertices), len(self.triangles_vertex_indices))
+                + struct.pack('>II', len(self.vertices), len(self.triangles))
             )
             for vertex in self.vertices:
                 surface_file.write(struct.pack('>fff', *vertex))
-            for triangle_vertex_indices in self.triangles_vertex_indices:
-                surface_file.write(struct.pack('>III', *triangle_vertex_indices))
+            for triangle in self.triangles:
+                surface_file.write(struct.pack('>III', *triangle.vertex_indices))
             surface_file.write(self._TAG_OLD_USEREALRAS
                                + struct.pack('>I', 1 if self.using_old_real_ras else 0))
             surface_file.write(self._TAG_OLD_SURF_GEOM
