@@ -67,10 +67,8 @@ class _PolygonalCircuit:
 
     _VERTEX_INDICES_TYPE = typing.Tuple[int]
 
-    _vertex_indices: _VERTEX_INDICES_TYPE
-
     def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
-        self.vertex_indices = vertex_indices
+        self.vertex_indices: self._VERTEX_INDICES_TYPE = vertex_indices
 
     @property
     def vertex_indices(self):
@@ -78,6 +76,7 @@ class _PolygonalCircuit:
 
     @vertex_indices.setter
     def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
+        # pylint: disable=attribute-defined-outside-init
         self._vertex_indices = indices
 
     def __eq__(self, other: '_PolygonalCircuit') -> bool:
@@ -89,9 +88,11 @@ class _PolygonalCircuit:
 
 class _LineSegment(_PolygonalCircuit):
 
+    # pylint: disable=no-member
     @_PolygonalCircuit.vertex_indices.setter
     def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
         assert len(indices) == 2
+        # pylint: disable=attribute-defined-outside-init
         self._vertex_indices = indices
 
     def __repr__(self) -> str:
@@ -100,9 +101,11 @@ class _LineSegment(_PolygonalCircuit):
 
 class Triangle(_PolygonalCircuit):
 
+    # pylint: disable=no-member
     @_PolygonalCircuit.vertex_indices.setter
     def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
         assert len(indices) == 3
+        # pylint: disable=attribute-defined-outside-init
         self._vertex_indices = indices
 
     def __repr__(self) -> str:
@@ -111,14 +114,15 @@ class Triangle(_PolygonalCircuit):
 
 class Label:
 
-    # pylint: disable=too-few-public-methods
-
-    index: int
-    name: str
-    red: int
-    green: int
-    blue: int
-    transparency: int
+    # pylint: disable=too-many-arguments
+    def __init__(self, index: int, name: str, red: int,
+                 green: int, blue: int, transparency: int):
+        self.index: int = index
+        self.name: str = name
+        self.red: int = red
+        self.green: int = green
+        self.blue: int = blue
+        self.transparency: int = transparency
 
     @property
     def color_code(self) -> int:
@@ -145,19 +149,19 @@ class Annotation:
 
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
-    vertex_label_index: typing.Dict[int, int] = {}
-    colortable_path: typing.Optional[bytes] = None
-    labels: typing.Dict[int, Label] = None
+    def __init__(self):
+        self.vertex_label_index: typing.Dict[int, int] = {}
+        self.colortable_path: typing.Optional[bytes] = None
+        self.labels: typing.Dict[int, Label] = {}
 
     @staticmethod
     def _read_label(stream: typing.BinaryIO) -> Label:
-        label = Label()
-        label.index, name_length = struct.unpack('>II', stream.read(4 * 2))
-        label.name = stream.read(name_length - 1).decode()
+        index, name_length = struct.unpack('>II', stream.read(4 * 2))
+        name = stream.read(name_length - 1).decode()
         assert stream.read(1) == b'\0'
-        label.red, label.green, label.blue, label.transparency \
-            = struct.unpack('>IIII', stream.read(4 * 4))
-        return label
+        red, green, blue, transparency = struct.unpack('>IIII', stream.read(4 * 4))
+        return Label(index=index, name=name, red=red, green=green,
+                     blue=blue, transparency=transparency)
 
     def _read(self, stream: typing.BinaryIO) -> None:
         # https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles
@@ -199,14 +203,15 @@ class Surface:
 
     _DATETIME_FORMAT = '%a %b %d %H:%M:%S %Y'
 
-    creator: typing.Optional[bytes] = None
-    creation_datetime: typing.Optional[datetime.datetime] = None
-    vertices: typing.List[Vertex] = []
-    triangles: typing.List[Triangle] = []
-    using_old_real_ras: bool = False
-    volume_geometry_info: typing.Optional[typing.Tuple[bytes]] = None
-    command_lines: typing.List[bytes] = []
-    annotation: typing.Optional[Annotation] = None
+    def __init__(self):
+        self.creator: typing.Optional[bytes] = None
+        self.creation_datetime: typing.Optional[datetime.datetime] = None
+        self.vertices: typing.List[Vertex] = []
+        self.triangles: typing.List[Triangle] = []
+        self.using_old_real_ras: bool = False
+        self.volume_geometry_info: typing.Optional[typing.Tuple[bytes]] = None
+        self.command_lines: typing.List[bytes] = []
+        self.annotation: typing.Optional[Annotation] = None
 
     @classmethod
     def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[str]:

@@ -11,22 +11,12 @@ from freesurfer_surface import Label
     ( 20, 220, 160,   0, 10542100),
 ])
 def test_color_code(red, green, blue, transparency, color_code):
-    label = Label()
-    label.index = 21
-    label.red = red
-    label.green = green
-    label.blue = blue
-    label.transparency = transparency
+    label = Label(index=21, name='name', red=red, green=green, blue=blue, transparency=transparency)
     assert color_code == label.color_code
 
 
 def test_color_code_unknown():
-    label = Label()
-    label.index = 0
-    label.name = 'unknown'
-    label.red = 21
-    label.green = 21
-    label.blue = 21
+    label = Label(index=0, name='unknown', red=21, green=21, blue=21, transparency=0)
     assert label.color_code == 0
 
 
@@ -43,30 +33,15 @@ def test_color_code_unknown():
     ( 20, 220, 160, '#14dca0'),
 ])
 def test_hex_color_code(red, green, blue, hex_color_code):
-    label = Label()
-    label.red = red
-    label.green = green
-    label.blue = blue
+    label = Label(index=21, name='name', red=red, green=green, blue=blue, transparency=0)
     assert hex_color_code == label.hex_color_code.lower()
 
 
 def test_str():
-    label = Label()
-    label.index = 24
-    label.name = 'precentral'
-    label.red = 60
-    label.green = 20
-    label.blue = 220
-    label.transparency = 0
+    label = Label(index=24, name='precentral', red=60, green=20, blue=220, transparency=0)
     assert str(label) == 'Label(name=precentral, index=24, color=#3c14dc)'
 
 
 def test_repr():
-    label = Label()
-    label.index = 24
-    label.name = 'precentral'
-    label.red = 60
-    label.green = 20
-    label.blue = 220
-    label.transparency = 0
+    label = Label(index=24, name='precentral', red=60, green=20, blue=220, transparency=0)
     assert repr(label) == 'Label(name=precentral, index=24, color=#3c14dc)'
