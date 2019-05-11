@@ -10,6 +10,7 @@ freesurfer-surface = {editable = true, path = "."}
 pylint = ">=2.3.0,<3"
 pytest = "<5"
 pytest-cov = "<3,>=2"
+"autopep8" = "<2"
 
 [requires]
 python_version = "3"

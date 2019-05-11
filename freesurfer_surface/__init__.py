@@ -76,7 +76,7 @@ class Label:
 
     @property
     def color_code(self) -> int:
-        if self.index == 0: # unknown
+        if self.index == 0:  # unknown
             return 0
         return int.from_bytes((self.red, self.green, self.blue, self.transparency),
                               byteorder='little', signed=False)

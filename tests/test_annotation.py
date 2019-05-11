@@ -23,7 +23,7 @@ def test_load_annotation():
     assert vars(annotation.labels[0]) == {'index': 0, 'name': 'unknown',
                                           'red': 25, 'green': 5, 'blue': 25, 'transparency': 0}
     assert vars(annotation.labels[28]) == {'index': 28, 'name': 'superiorfrontal',
-                                          'red': 20, 'green': 220, 'blue': 160, 'transparency': 0}
+                                           'red': 20, 'green': 220, 'blue': 160, 'transparency': 0}
     precentral, = filter(lambda l: l.name == 'precentral', annotation.labels.values())
     postcentral, = filter(lambda l: l.name == 'postcentral', annotation.labels.values())
     assert vars(precentral) == {'index': 24, 'name': 'precentral',
