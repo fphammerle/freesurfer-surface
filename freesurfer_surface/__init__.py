@@ -90,7 +90,8 @@ class _PolygonalCircuit:
         return self._normalize().vertex_indices == other._normalize().vertex_indices
 
     def __hash__(self) -> int:
-        return hash(self._vertex_indices)
+        # pylint: disable=protected-access
+        return hash(self._normalize()._vertex_indices)
 
 
 class _LineSegment(_PolygonalCircuit):
