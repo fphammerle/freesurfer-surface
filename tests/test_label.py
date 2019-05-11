@@ -59,3 +59,14 @@ def test_str():
     label.blue = 220
     label.transparency = 0
     assert str(label) == 'Label(name=precentral, index=24, color=#3c14dc)'
+
+
+def test_repr():
+    label = Label()
+    label.index = 24
+    label.name = 'precentral'
+    label.red = 60
+    label.green = 20
+    label.blue = 220
+    label.transparency = 0
+    assert repr(label) == 'Label(name=precentral, index=24, color=#3c14dc)'

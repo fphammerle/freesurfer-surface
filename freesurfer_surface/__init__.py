@@ -113,6 +113,9 @@ class Label:
         return 'Label(name={}, index={}, color={})'.format(
             self.name, self.index, self.hex_color_code)
 
+    def __repr__(self) -> str:
+        return str(self)
+
 
 class Annotation:
 
