@@ -1,6 +1,6 @@
 import pytest
 
-from freesurfer_surface import PolygonalChain
+from freesurfer_surface import PolygonalChain, PolygonalChainsNotOverlapingError, _LineSegment
 
 
 def test_init():
@@ -41,6 +41,7 @@ def test_repr():
     ((1, 2), (1,), (1, 2)),
     ((1, 2), (2,), (1, 2)),
     ((0, 3, 1, 5, 2), (3, 5, 2, 0), (3, 5, 2, 0, 3, 1, 5, 2)),
+    ((98792, 98807, 98821), (98792, 98793), (98793, 98792, 98807, 98821)),
 ])
 def test_connect(vertex_indices_a, vertex_indices_b, expected_vertex_indices):
     chain = PolygonalChain(vertex_indices_a)
@@ -50,10 +51,27 @@ def test_connect(vertex_indices_a, vertex_indices_b, expected_vertex_indices):
 
 @pytest.mark.parametrize(('vertex_indices_a', 'vertex_indices_b'), [
     ((1, 2, 3), (2, 4)),
-    ((1, 2, 3), ()),
-    ((), (3, 4)),
 ])
 def test_connect_fail(vertex_indices_a, vertex_indices_b):
     chain = PolygonalChain(vertex_indices_a)
+    with pytest.raises(PolygonalChainsNotOverlapingError):
+        chain.connect(PolygonalChain(vertex_indices_b))
+
+
+@pytest.mark.parametrize(('vertex_indices_a', 'vertex_indices_b'), [
+    ((1, 2, 3), ()),
+    ((), (3, 4)),
+])
+def test_connect_fail_empty(vertex_indices_a, vertex_indices_b):
+    chain = PolygonalChain(vertex_indices_a)
     with pytest.raises(Exception):
         chain.connect(PolygonalChain(vertex_indices_b))
+
+
+def test_segments():
+    chain = PolygonalChain((0, 1, 4, 8))
+    segments = list(chain.segments())
+    assert len(segments) == 3
+    assert segments[0] == _LineSegment((0, 1))
+    assert segments[1] == _LineSegment((1, 4))
+    assert segments[2] == _LineSegment((4, 8))

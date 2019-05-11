@@ -32,6 +32,7 @@ https://surfer.nmr.mgh.harvard.edu/
 import collections
 import contextlib
 import datetime
+import itertools
 import locale
 import re
 import struct
@@ -61,34 +62,6 @@ def setlocale(temporary_locale):
 
 
 Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
-
-
-class PolygonalChain:
-
-    def __init__(self, vertex_indices: typing.Iterable[int]):
-        self.vertex_indices: typing.Deque[int] = collections.deque(vertex_indices)
-
-    def __eq__(self, other: 'PolygonalChain') -> bool:
-        return self.vertex_indices == other.vertex_indices
-
-    def __repr__(self) -> str:
-        return 'PolygonalChain(vertex_indices={})'.format(tuple(self.vertex_indices))
-
-    def connect(self, other: 'PolygonalChain') -> None:
-        if self.vertex_indices[-1] == other.vertex_indices[0]:
-            self.vertex_indices.pop()
-            self.vertex_indices.extend(other.vertex_indices)
-        elif self.vertex_indices[-1] == other.vertex_indices[-1]:
-            self.vertex_indices.pop()
-            self.vertex_indices.extend(reversed(other.vertex_indices))
-        elif self.vertex_indices[0] == other.vertex_indices[0]:
-            self.vertex_indices.popleft()
-            self.vertex_indices.extendleft(other.vertex_indices)
-        elif self.vertex_indices[0] == other.vertex_indices[-1]:
-            self.vertex_indices.popleft()
-            self.vertex_indices.extendleft(reversed(other.vertex_indices))
-        else:
-            raise ValueError('polygonal chains do not overlap')
 
 
 class _PolygonalCircuit:
@@ -138,6 +111,42 @@ class Triangle(_PolygonalCircuit):
 
     def __repr__(self) -> str:
         return 'Triangle(vertex_indices={})'.format(self.vertex_indices)
+
+
+class PolygonalChainsNotOverlapingError(ValueError):
+    pass
+
+
+class PolygonalChain:
+
+    def __init__(self, vertex_indices: typing.Iterable[int]):
+        self.vertex_indices: typing.Deque[int] = collections.deque(vertex_indices)
+
+    def __eq__(self, other: 'PolygonalChain') -> bool:
+        return self.vertex_indices == other.vertex_indices
+
+    def __repr__(self) -> str:
+        return 'PolygonalChain(vertex_indices={})'.format(tuple(self.vertex_indices))
+
+    def connect(self, other: 'PolygonalChain') -> None:
+        if self.vertex_indices[-1] == other.vertex_indices[0]:
+            self.vertex_indices.pop()
+            self.vertex_indices.extend(other.vertex_indices)
+        elif self.vertex_indices[-1] == other.vertex_indices[-1]:
+            self.vertex_indices.pop()
+            self.vertex_indices.extend(reversed(other.vertex_indices))
+        elif self.vertex_indices[0] == other.vertex_indices[0]:
+            self.vertex_indices.popleft()
+            self.vertex_indices.extendleft(other.vertex_indices)
+        elif self.vertex_indices[0] == other.vertex_indices[-1]:
+            self.vertex_indices.popleft()
+            self.vertex_indices.extendleft(reversed(other.vertex_indices))
+        else:
+            raise PolygonalChainsNotOverlapingError()
+
+    def segments(self) -> typing.Iterable[_LineSegment]:
+        indices = self.vertex_indices
+        return map(_LineSegment, zip(indices, itertools.islice(indices, 1, len(indices))))
 
 
 class Label:
