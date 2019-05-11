@@ -1,13 +1,11 @@
 import datetime
-import os
 
 import pytest
 
-from freesurfer_surface import setlocale, Vertex, Triangle, Annotation, Surface
+from freesurfer_surface import setlocale, Vertex, Triangle, _LineSegment, \
+                               Annotation, Surface
 
-from conftest import SUBJECTS_DIR
-
-SURFACE_FILE_PATH = os.path.join(SUBJECTS_DIR, 'fabian', 'surf', 'lh.pial')
+from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
 
 
 def test_read_triangular():
@@ -119,8 +117,7 @@ def test_write_triangular_same_locale(tmpdir):
 def test_load_annotation():
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
     assert not surface.annotation
-    surface.load_annotation_file(os.path.join(SUBJECTS_DIR, 'fabian',
-                                              'label', 'lh.aparc.annot'))
+    surface.load_annotation_file(ANNOTATION_FILE_PATH)
     assert isinstance(surface.annotation, Annotation)
     assert len(surface.annotation.vertex_label_index) == 155622
     assert surface.annotation.vertex_label_index[0] == 5
@@ -135,3 +132,20 @@ def test_add_vertex():
     assert surface.add_vertex(Vertex(-3.0, 0.0, 4.0)) == 1
     assert len(surface.vertices) == 2
     assert surface.vertices[1].right == pytest.approx(-3.0)
+
+
+def test__find_label_border_segments():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    surface.load_annotation_file(ANNOTATION_FILE_PATH)
+    precentral_label, = filter(lambda l: l.name == 'precentral',
+                               surface.annotation.labels.values())
+    # pylint: disable=protected-access
+    border_segments = set(surface._find_label_border_segments(precentral_label))
+    assert len(border_segments) == 417
+    assert _LineSegment((33450, 32065)) in border_segments
+    assert _LineSegment((33454, 33450)) in border_segments
+    for border_vertex_index in [33450, 33454, 32065]:
+        assert surface.annotation.vertex_label_index[border_vertex_index] == precentral_label.index
+        for other_vertex_index in [32064, 33449, 33455, 33449, 33455]:
+            assert _LineSegment((other_vertex_index, border_vertex_index)) not in border_segments
+            assert _LineSegment((border_vertex_index, other_vertex_index)) not in border_segments

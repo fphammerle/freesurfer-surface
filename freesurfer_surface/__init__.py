@@ -63,9 +63,35 @@ def setlocale(temporary_locale):
 Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
 
 
-class Triangle:
+class _LineSegment:
 
-    # pylint: disable=too-few-public-methods
+    _VERTEX_INDICES_TYPE = typing.Tuple[int]
+
+    _vertex_indices: _VERTEX_INDICES_TYPE
+
+    def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
+        self.vertex_indices = vertex_indices
+
+    @property
+    def vertex_indices(self):
+        return self._vertex_indices
+
+    @vertex_indices.setter
+    def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
+        assert len(indices) == 2
+        self._vertex_indices = indices
+
+    def __eq__(self, other: '_Line') -> bool:
+        return self.vertex_indices == other.vertex_indices
+
+    def __hash__(self) -> int:
+        return hash(self._vertex_indices)
+
+    def __repr__(self) -> str:
+        return '_LineSegment(vertex_indices={})'.format(self.vertex_indices)
+
+
+class Triangle:
 
     _VERTEX_INDICES_TYPE = typing.Tuple[int]
 
@@ -278,3 +304,12 @@ class Surface:
     def add_vertex(self, vertex: Vertex) -> int:
         self.vertices.append(vertex)
         return len(self.vertices) - 1
+
+    def _find_label_border_segments(self, label: Label) -> typing.Iterator[_LineSegment]:
+        for triangle in self.triangles:
+            border_vertex_indices = tuple(filter(
+                lambda i: self.annotation.vertex_label_index[i] == label.index,
+                triangle.vertex_indices,
+            ))
+            if len(border_vertex_indices) == 2:
+                yield _LineSegment(border_vertex_indices)
