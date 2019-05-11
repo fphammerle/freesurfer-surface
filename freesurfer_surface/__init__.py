@@ -19,6 +19,14 @@ https://surfer.nmr.mgh.harvard.edu/
 >>>
 >>> surface.load_annotation_file('bert/label/lh.aparc.annot')
 >>> print([label.name for label in surface.annotation.labels])
+>>>
+>>> precentral, = filter(lambda l: l.name == 'precentral', annotation.labels.values())
+>>> print(precentral.hex_color_code)
+>>>
+>>> precentral_vertix_indices = [vertex_index for vertex_index, label_index
+>>>                              in surface.annotation.vertex_label_index.items()
+>>>                              if label_index == precentral.index]
+>>> print(len(precentral_vertix_indices))
 """
 
 import collections
@@ -84,11 +92,9 @@ class Annotation:
 
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
-    # TODO replace with vertex_label_index
-    vertex_color_codes: typing.Dict[int, int] = {}
+    vertex_label_index: typing.Dict[int, int] = {}
     colortable_path: typing.Optional[bytes] = None
-    # TODO dict
-    labels: typing.List[Label] = None
+    labels: typing.Dict[int, Label] = None
 
     @staticmethod
     def _read_label(stream: typing.BinaryIO) -> Label:
@@ -103,20 +109,20 @@ class Annotation:
     def _read(self, stream: typing.BinaryIO) -> None:
         # https://surfer.nmr.mgh.harvard.edu/fswiki/LabelsClutsAnnotationFiles
         annotations_num, = struct.unpack('>I', stream.read(4))
-        annotations = (struct.unpack('>II', stream.read(4 * 2))
-                       for _ in range(annotations_num))
-        self.vertex_color_codes = {vertex_index: color_code
-                                   for vertex_index, color_code in annotations}
+        annotations = [struct.unpack('>II', stream.read(4 * 2))
+                       for _ in range(annotations_num)]
         assert stream.read(4) == self._TAG_OLD_COLORTABLE
         colortable_version, _, filename_length = struct.unpack('>III', stream.read(4 * 3))
         assert colortable_version > 0  # new version
         self.colortable_path = stream.read(filename_length - 1)
         assert stream.read(1) == b'\0'
         labels_num, = struct.unpack('>I', stream.read(4))
-        self.labels = [self._read_label(stream) for _ in range(labels_num)]
-        label_color_codes = set(l.color_code for l in self.labels)
-        assert all(vertex_color_code in label_color_codes
-                   for vertex_color_code in self.vertex_color_codes.values())
+        self.labels = {label.index: label for label
+                       in (self._read_label(stream) for _ in range(labels_num))}
+        label_index_by_color_code = {label.color_code: label.index
+                                     for label in self.labels.values()}
+        self.vertex_label_index = {vertex_index: label_index_by_color_code[color_code]
+                                   for vertex_index, color_code in annotations}
         assert not stream.read(1)
 
     @classmethod
@@ -231,9 +237,8 @@ class Surface:
 
     def load_annotation_file(self, annotation_file_path: str) -> None:
         annotation = Annotation.read(annotation_file_path)
-        assert len(annotation.vertex_color_codes) <= len(self.vertices)
-        assert all(0 <= vertex_index < len(self.vertices)
-                   for vertex_index in annotation.vertex_color_codes.keys())
+        assert len(annotation.vertex_label_index) <= len(self.vertices)
+        assert max(annotation.vertex_label_index.keys()) < len(self.vertices)
         self.annotation = annotation
 
     def add_vertex(self, vertex: Vertex) -> int:

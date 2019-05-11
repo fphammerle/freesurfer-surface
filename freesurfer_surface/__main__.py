@@ -17,4 +17,5 @@ def annotation_labels():
     annotation = Annotation.read(args.annotation_file_path)
     csv_writer = csv.writer(sys.stdout, delimiter=args.delimiter)
     csv_writer.writerow(('index', 'color', 'name'))
-    csv_writer.writerows((l.index, l.hex_color_code, l.name,) for l in annotation.labels)
+    labels = sorted(annotation.labels.values(), key=lambda l: l.index)
+    csv_writer.writerows((l.index, l.hex_color_code, l.name,) for l in labels)

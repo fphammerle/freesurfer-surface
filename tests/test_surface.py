@@ -122,8 +122,8 @@ def test_load_annotation():
     surface.load_annotation_file(os.path.join(SUBJECTS_DIR, 'fabian',
                                               'label', 'lh.aparc.annot'))
     assert isinstance(surface.annotation, Annotation)
-    assert len(surface.annotation.vertex_color_codes) == 155622
-    assert surface.annotation.vertex_color_codes[0] == (((100 << 8) + 20) << 8) + 220
+    assert len(surface.annotation.vertex_label_index) == 155622
+    assert surface.annotation.vertex_label_index[0] == 5
 
 
 def test_add_vertex():
