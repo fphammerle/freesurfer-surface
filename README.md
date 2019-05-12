@@ -4,6 +4,7 @@
 [![Coverage Status](https://coveralls.io/repos/github/fphammerle/freesurfer-surface/badge.svg?branch=master)](https://coveralls.io/github/fphammerle/freesurfer-surface?branch=master)
 [![Latest PyPI Version](https://img.shields.io/pypi/v/freesurfer-surface.svg)](https://pypi.org/project/freesurfer-surface/#history)
 [![Python Versions](https://img.shields.io/pypi/pyversions/freesurfer-surface.svg)](https://pypi.org/project/freesurfer-surface/)
+[![DOI](https://zenodo.org/badge/185943856.svg)](https://zenodo.org/badge/latestdoi/185943856)
 
 Python Library to Read and Write Surface Files in Freesurfer’s TriangularSurface Format
 
