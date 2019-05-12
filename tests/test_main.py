@@ -4,8 +4,6 @@ import subprocess
 import typing
 import unittest.mock
 
-import pytest
-
 from freesurfer_surface.__main__ import annotation_labels
 
 from conftest import ANNOTATION_FILE_PATH

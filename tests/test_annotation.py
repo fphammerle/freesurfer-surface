@@ -1,5 +1,3 @@
-import os
-
 from freesurfer_surface import Annotation
 
 from conftest import ANNOTATION_FILE_PATH
