@@ -318,23 +318,22 @@ class Surface:
             surface._read_triangular(surface_file)
         return surface
 
-    def _triangular_creation_datetime_strftime(self) -> bytes:
-        padded_day = '{:>2}'.format(self.creation_datetime.day)
-        fmt = self._DATETIME_FORMAT.replace('%d', padded_day)
+    @classmethod
+    def _triangular_strftime(cls, creation_datetime: datetime.datetime) -> bytes:
+        padded_day = '{:>2}'.format(creation_datetime.day)
+        fmt = cls._DATETIME_FORMAT.replace('%d', padded_day)
         with setlocale('C'):
-            return self.creation_datetime.strftime(fmt).encode()
+            return creation_datetime.strftime(fmt).encode()
 
     def write_triangular(self, surface_file_path: str,
                          creation_datetime: typing.Optional[datetime.datetime] = None):
         if creation_datetime is None:
-            self.creation_datetime = datetime.datetime.now()
-        else:
-            self.creation_datetime = creation_datetime
+            creation_datetime = datetime.datetime.now()
         with open(surface_file_path, 'wb') as surface_file:
             surface_file.write(
                 self._MAGIC_NUMBER
                 + b'created by ' + self.creator
-                + b' on ' + self._triangular_creation_datetime_strftime()
+                + b' on ' + self._triangular_strftime(creation_datetime)
                 + b'\n\n'
                 + struct.pack('>II', len(self.vertices), len(self.triangles))
             )

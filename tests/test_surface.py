@@ -64,11 +64,9 @@ def test_read_triangular_locale():
     (datetime.datetime(2019, 5, 9, 22, 37, 41), b'Thu May  9 22:37:41 2019'),
     (datetime.datetime(2019, 4, 24, 23, 29, 22), b'Wed Apr 24 23:29:22 2019'),
 ])
-def test_triangular_creation_datetime_strftime(creation_datetime, expected_str):
-    surface = Surface()
-    surface.creation_datetime = creation_datetime
+def test_triangular_strftime(creation_datetime, expected_str):
     # pylint: disable=protected-access
-    assert expected_str == surface._triangular_creation_datetime_strftime()
+    assert expected_str == Surface._triangular_strftime(creation_datetime)
 
 
 def test_read_write_triangular_same(tmpdir):
@@ -79,6 +77,20 @@ def test_read_write_triangular_same(tmpdir):
     with open(output_path, 'rb') as output_file:
         with open(SURFACE_FILE_PATH, 'rb') as expected_file:
             assert expected_file.read() == output_file.read()
+
+
+def test_read_write_datetime(tmpdir):
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    original_creation_datetime = surface.creation_datetime
+
+    output_path = tmpdir.join('surface')
+    surface.write_triangular(output_path)
+    assert original_creation_datetime == surface.creation_datetime
+    new_surface = Surface.read_triangular(output_path)
+    assert new_surface.creation_datetime > original_creation_datetime
+    assert datetime.datetime.now() > new_surface.creation_datetime
+    assert (datetime.datetime.now() - new_surface.creation_datetime) \
+            < datetime.timedelta(seconds=20)
 
 
 def test_write_read_triangular_same(tmpdir):
