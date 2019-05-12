@@ -9,24 +9,31 @@ https://raw.githubusercontent.com/freesurfer/freesurfer/release_6_0_0/utils/mris
 Freesurfer
 https://surfer.nmr.mgh.harvard.edu/
 
->>> from freesurfer_surface import Surface, Vertex
+Edit Surface File
+>>> from freesurfer_surface import Surface, Vertex, Triangle
 >>>
 >>> surface = Surface.read_triangular('bert/surf/lh.pial'))
 >>>
->>> vertex_index = surface.add_vertex(Vertex(0.0, -3.14, 21.42))
->>> print(surface.vertices[vertex_index])
+>>> vertex_a = surface.add_vertex(Vertex(0.0, 0.0, 0.0))
+>>> vertex_b = surface.add_vertex(Vertex(1.0, 1.0, 1.0))
+>>> vertex_c = surface.add_vertex(Vertex(2.0, 2.0, 2.0))
+>>> surface.triangles.append(Triangle((vertex_a, vertex_b, vertex_c)))
+>>>
 >>> surface.write_triangular('somewhere/else/lh.pial')
+
+List Labels in Annotation File
+>>> from freesurfer_surface import Annotation
 >>>
+>>> annotation = Annotation.read('bert/label/lh.aparc.annot')
+>>> for label in annotation.labels.values():
+>>>     print(label.index, label.hex_color_code, label.name)
+
+Find Border of Labelled Region
+>>> surface = Surface.read_triangular('bert/surf/lh.pial'))
 >>> surface.load_annotation_file('bert/label/lh.aparc.annot')
->>> print([label.name for label in surface.annotation.labels])
->>>
->>> precentral, = filter(lambda l: l.name == 'precentral', annotation.labels.values())
->>> print(precentral.hex_color_code)
->>>
->>> precentral_vertix_indices = [vertex_index for vertex_index, label_index
->>>                              in surface.annotation.vertex_label_index.items()
->>>                              if label_index == precentral.index]
->>> print(len(precentral_vertix_indices))
+>>> region, = filter(lambda l: l.name == 'precentral',
+>>>                  annotation.labels.values())
+>>> print(surface.find_label_border_polygonal_chains(region))
 """
 
 import collections

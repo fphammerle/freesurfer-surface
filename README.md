@@ -1,5 +1,17 @@
 ## Usage
 
+### Edit Surface File
+
+```python
+from freesurfer_surface import Surface, Vertex, Triangle
+surface = Surface.read_triangular('bert/surf/lh.pial'))
+vertex_a = surface.add_vertex(Vertex(0.0, 0.0, 0.0))
+vertex_b = surface.add_vertex(Vertex(1.0, 1.0, 1.0))
+vertex_c = surface.add_vertex(Vertex(2.0, 2.0, 2.0))
+surface.triangles.append(Triangle((vertex_a, vertex_b, vertex_c)))
+surface.write_triangular('somewhere/else/lh.pial')
+```
+
 ### List Labels in Annotation File
 
 ```python
@@ -23,4 +35,15 @@ index	color	name
 33	#4614aa	temporalpole
 34	#9696c8	transversetemporal
 35	#ffc020	insula
+```
+
+### Find Border of Labelled Region
+
+```python
+from freesurfer_surface import Surface
+surface = Surface.read_triangular('bert/surf/lh.pial'))
+surface.load_annotation_file('bert/label/lh.aparc.annot')
+region, = filter(lambda l: l.name == 'precentral',
+                 annotation.labels.values())
+print(surface.find_label_border_polygonal_chains(region))
 ```
