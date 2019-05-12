@@ -34,8 +34,6 @@ setuptools.setup(
         'Development Status :: 3 - Alpha',
         'Intended Audience :: Healthcare Industry',
         'Intended Audience :: Science/Research',
-        # TODO
-        # 'Programming Language :: Python :: 3.4',
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7',
@@ -49,6 +47,7 @@ setuptools.setup(
             'freesurfer-annotation-labels = freesurfer_surface.__main__:annotation_labels',
         ],
     },
+    python_requires='>=3.5',
     install_requires=[
         'numpy<2',
     ],
