@@ -90,7 +90,7 @@ def test_read_write_datetime(tmpdir):
     assert new_surface.creation_datetime > original_creation_datetime
     assert datetime.datetime.now() > new_surface.creation_datetime
     assert (datetime.datetime.now() - new_surface.creation_datetime) \
-            < datetime.timedelta(seconds=20)
+        < datetime.timedelta(seconds=20)
 
 
 def test_write_read_triangular_same(tmpdir):

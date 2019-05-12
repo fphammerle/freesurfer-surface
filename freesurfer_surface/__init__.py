@@ -78,7 +78,7 @@ class _PolygonalCircuit:
     _VERTEX_INDICES_TYPE = typing.Tuple[int]
 
     def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
-        self.vertex_indices: self._VERTEX_INDICES_TYPE = vertex_indices
+        self.vertex_indices = vertex_indices
 
     @property
     def vertex_indices(self):
@@ -136,8 +136,7 @@ class PolygonalChainsNotOverlapingError(ValueError):
 class PolygonalChain:
 
     def __init__(self, vertex_indices: typing.Iterable[int]):
-        self.vertex_indices: typing.Deque[int] \
-            = collections.deque(vertex_indices)
+        self.vertex_indices = collections.deque(vertex_indices) # type: Deque[int]
 
     def __eq__(self, other: 'PolygonalChain') -> bool:
         return self.vertex_indices == other.vertex_indices
@@ -171,12 +170,12 @@ class Label:
     # pylint: disable=too-many-arguments
     def __init__(self, index: int, name: str, red: int,
                  green: int, blue: int, transparency: int):
-        self.index: int = index
-        self.name: str = name
-        self.red: int = red
-        self.green: int = green
-        self.blue: int = blue
-        self.transparency: int = transparency
+        self.index = index  # type: int
+        self.name = name  # type: str
+        self.red = red  # type: int
+        self.green = green  # type: int
+        self.blue = blue  # type: int
+        self.transparency = transparency  # type: int
 
     @property
     def color_code(self) -> int:
@@ -204,9 +203,9 @@ class Annotation:
     _TAG_OLD_COLORTABLE = b'\0\0\0\x01'
 
     def __init__(self):
-        self.vertex_label_index: typing.Dict[int, int] = {}
-        self.colortable_path: typing.Optional[bytes] = None
-        self.labels: typing.Dict[int, Label] = {}
+        self.vertex_label_index = {}  # type: Dict[int, int]
+        self.colortable_path = None  # type: Optional[bytes]
+        self.labels = {}  # type: Dict[int, Label]
 
     @staticmethod
     def _read_label(stream: typing.BinaryIO) -> Label:
@@ -260,14 +259,14 @@ class Surface:
     _DATETIME_FORMAT = '%a %b %d %H:%M:%S %Y'
 
     def __init__(self):
-        self.creator: typing.Optional[bytes] = None
-        self.creation_datetime: typing.Optional[datetime.datetime] = None
-        self.vertices: typing.List[Vertex] = []
-        self.triangles: typing.List[Triangle] = []
-        self.using_old_real_ras: bool = False
-        self.volume_geometry_info: typing.Optional[typing.Tuple[bytes]] = None
-        self.command_lines: typing.List[bytes] = []
-        self.annotation: typing.Optional[Annotation] = None
+        self.creator = None  # type: Optional[bytes]
+        self.creation_datetime = None  # type: Optional[datetime.datetime]
+        self.vertices = []  # type: List[Vertex]
+        self.triangles = []  # type: List[Triangle]
+        self.using_old_real_ras = False  # type: bool
+        self.volume_geometry_info = None  # type: Optional[Tuple[bytes]]
+        self.command_lines = []  # type: List[bytes]
+        self.annotation = None  # type: Optional[Annotation]
 
     @classmethod
     def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[str]:
