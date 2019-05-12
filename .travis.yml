@@ -1,0 +1,25 @@
+language: python
+
+python:
+- 3.4
+- 3.5
+- 3.6
+- 3.6-dev
+- 3.7
+- 3.7-dev
+
+# required for python >= 3.7
+dist: xenial
+
+install:
+- pip install pipenv
+- pipenv sync --dev
+- pipenv graph
+
+script:
+- pipenv run pylint freesurfer_surface tests/*
+- pipenv run pytest --cov=freesurfer_surface --cov-report=term-missing --cov-fail-under=100
+
+after_success:
+- pip install coveralls
+- coveralls
