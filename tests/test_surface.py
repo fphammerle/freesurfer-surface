@@ -11,7 +11,8 @@ from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
 def test_read_triangular():
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
     assert surface.creator == b'fabianpeter'
-    assert surface.creation_datetime == datetime.datetime(2019, 5, 9, 22, 37, 41)
+    assert surface.creation_datetime \
+        == datetime.datetime(2019, 5, 9, 22, 37, 41)
     assert len(surface.vertices) == 155622
     assert len(surface.triangles) == 311240
     assert not surface.using_old_real_ras
@@ -55,7 +56,8 @@ def test_read_triangular():
 def test_read_triangular_locale():
     with setlocale('de_AT.utf8'):
         surface = Surface.read_triangular(SURFACE_FILE_PATH)
-    assert surface.creation_datetime == datetime.datetime(2019, 5, 9, 22, 37, 41)
+    assert surface.creation_datetime \
+        == datetime.datetime(2019, 5, 9, 22, 37, 41)
 
 
 @pytest.mark.parametrize(('creation_datetime', 'expected_str'), [
@@ -107,11 +109,13 @@ def test_write_triangular_same_locale(tmpdir):
     creation_datetime = datetime.datetime(2018, 12, 31, 21, 42)
     output_path = tmpdir.join('surface')
     with setlocale('de_AT.utf8'):
-        surface.write_triangular(output_path, creation_datetime=creation_datetime)
+        surface.write_triangular(output_path,
+                                 creation_datetime=creation_datetime)
     resulted_surface = Surface.read_triangular(output_path)
     assert resulted_surface.creation_datetime == creation_datetime
     with open(output_path, 'rb') as output_file:
-        assert output_file.read().split(b' on ')[1].startswith(b'Mon Dec 31 21:42:00 2018\n')
+        assert output_file.read().split(b' on ')[1] \
+            .startswith(b'Mon Dec 31 21:42:00 2018\n')
 
 
 def test_load_annotation():
@@ -146,7 +150,8 @@ def test_add_rectangle(vertices_coords, expected_extra_vertex_coords):
     for vertex_coords in vertices_coords:
         surface.add_vertex(Vertex(*(float(c) for c in vertex_coords)))
     surface.add_rectangle(range(3))
-    assert tuple(surface.vertices[3]) == pytest.approx(expected_extra_vertex_coords)
+    assert tuple(surface.vertices[3]) \
+        == pytest.approx(expected_extra_vertex_coords)
     assert len(surface.triangles) == 2
     assert surface.triangles[0].vertex_indices == (0, 1, 2)
     assert surface.triangles[1].vertex_indices == (2, 3, 0)
@@ -158,15 +163,18 @@ def test__find_label_border_segments():
     precentral_label, = filter(lambda l: l.name == 'precentral',
                                surface.annotation.labels.values())
     # pylint: disable=protected-access
-    border_segments = set(surface._find_label_border_segments(precentral_label))
+    border_segments = set(
+        surface._find_label_border_segments(precentral_label))
     assert len(border_segments) == 417
     assert _LineSegment((33450, 32065)) in border_segments
     assert _LineSegment((33454, 33450)) in border_segments
     for border_vertex_index in [33450, 33454, 32065]:
         assert surface.annotation.vertex_label_index[border_vertex_index] == precentral_label.index
         for other_vertex_index in [32064, 33449, 33455, 33449, 33455]:
-            assert _LineSegment((other_vertex_index, border_vertex_index)) not in border_segments
-            assert _LineSegment((border_vertex_index, other_vertex_index)) not in border_segments
+            assert _LineSegment((other_vertex_index, border_vertex_index)) \
+                not in border_segments
+            assert _LineSegment((border_vertex_index, other_vertex_index)) \
+                not in border_segments
 
 
 def test_find_label_border_polygonal_chains():

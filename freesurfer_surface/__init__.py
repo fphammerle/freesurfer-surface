@@ -129,7 +129,8 @@ class PolygonalChainsNotOverlapingError(ValueError):
 class PolygonalChain:
 
     def __init__(self, vertex_indices: typing.Iterable[int]):
-        self.vertex_indices: typing.Deque[int] = collections.deque(vertex_indices)
+        self.vertex_indices: typing.Deque[int] \
+            = collections.deque(vertex_indices)
 
     def __eq__(self, other: 'PolygonalChain') -> bool:
         return self.vertex_indices == other.vertex_indices
@@ -205,7 +206,8 @@ class Annotation:
         index, name_length = struct.unpack('>II', stream.read(4 * 2))
         name = stream.read(name_length - 1).decode()
         assert stream.read(1) == b'\0'
-        red, green, blue, transparency = struct.unpack('>IIII', stream.read(4 * 4))
+        red, green, blue, transparency \
+            = struct.unpack('>IIII', stream.read(4 * 4))
         return Label(index=index, name=name, red=red, green=green,
                      blue=blue, transparency=transparency)
 
@@ -215,7 +217,8 @@ class Annotation:
         annotations = [struct.unpack('>II', stream.read(4 * 2))
                        for _ in range(annotations_num)]
         assert stream.read(4) == self._TAG_OLD_COLORTABLE
-        colortable_version, _, filename_length = struct.unpack('>III', stream.read(4 * 3))
+        colortable_version, _, filename_length \
+            = struct.unpack('>III', stream.read(4 * 3))
         assert colortable_version > 0  # new version
         self.colortable_path = stream.read(filename_length - 1)
         assert stream.read(1) == b'\0'
@@ -309,7 +312,8 @@ class Surface:
         return surface
 
     def _triangular_creation_datetime_strftime(self) -> bytes:
-        fmt = self._DATETIME_FORMAT.replace('%d', '{:>2}'.format(self.creation_datetime.day))
+        padded_day = '{:>2}'.format(self.creation_datetime.day)
+        fmt = self._DATETIME_FORMAT.replace('%d', padded_day)
         with setlocale('C'):
             return self.creation_datetime.strftime(fmt).encode()
 
@@ -332,7 +336,8 @@ class Surface:
             for triangle in self.triangles:
                 assert all(vertex_index < len(self.vertices)
                            for vertex_index in triangle.vertex_indices)
-                surface_file.write(struct.pack('>III', *triangle.vertex_indices))
+                surface_file.write(struct.pack('>III',
+                                               *triangle.vertex_indices))
             surface_file.write(self._TAG_OLD_USEREALRAS
                                + struct.pack('>I', 1 if self.using_old_real_ras else 0))
             surface_file.write(self._TAG_OLD_SURF_GEOM
@@ -356,10 +361,12 @@ class Surface:
         assert len(vertex_indices) == 3
         vertex_coords = [numpy.array(self.vertices[vertex_index])
                          for vertex_index in vertex_indices]
-        vertex_coords.append(vertex_coords[0] + vertex_coords[2] - vertex_coords[1])
+        vertex_coords.append(vertex_coords[0]
+                             + vertex_coords[2] - vertex_coords[1])
         vertex_indices.append(self.add_vertex(Vertex(*vertex_coords[3])))
         self.triangles.append(Triangle(vertex_indices[:3]))
-        self.triangles.append(Triangle(vertex_indices[2:] + vertex_indices[:1]))
+        self.triangles.append(Triangle(vertex_indices[2:]
+                                       + vertex_indices[:1]))
 
     def _find_label_border_segments(self, label: Label) -> typing.Iterator[_LineSegment]:
         for triangle in self.triangles:

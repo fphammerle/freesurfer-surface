@@ -10,8 +10,10 @@ def annotation_labels():
     List Labels Stored in Freesurfer's Annotation File
     (i.e., label/lh.aparc.annot)
     """
-    argparser = argparse.ArgumentParser(description=annotation_labels.__doc__.strip())
-    argparser.add_argument('--delimiter', default='\t', help='default: %(default)r')
+    argparser = argparse.ArgumentParser(
+        description=annotation_labels.__doc__.strip())
+    argparser.add_argument('--delimiter', default='\t',
+                           help='default: %(default)r')
     argparser.add_argument('annotation_file_path')
     args = argparser.parse_args()
     annotation = Annotation.read(args.annotation_file_path)

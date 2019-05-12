@@ -28,9 +28,15 @@ def test_eq():
 
 
 def test_hash():
-    assert hash(_PolygonalCircuit((0, 1, 2))) == hash(_PolygonalCircuit((0, 1, 2)))
-    assert hash(_PolygonalCircuit((0, 1, 2))) == hash(_PolygonalCircuit((1, 2, 0)))
-    assert hash(_PolygonalCircuit((0, 1, 2))) == hash(_PolygonalCircuit((2, 0, 1)))
-    assert hash(_PolygonalCircuit((0, 1, 2))) != hash(_PolygonalCircuit((0, 1, 4)))
-    assert hash(_PolygonalCircuit((0, 1, 2))) != hash(_PolygonalCircuit((0, 4, 2)))
-    assert hash(_PolygonalCircuit((0, 1, 2))) != hash(_PolygonalCircuit((4, 1, 2)))
+    assert hash(_PolygonalCircuit((0, 1, 2))) \
+        == hash(_PolygonalCircuit((0, 1, 2)))
+    assert hash(_PolygonalCircuit((0, 1, 2))) \
+        == hash(_PolygonalCircuit((1, 2, 0)))
+    assert hash(_PolygonalCircuit((0, 1, 2))) \
+        == hash(_PolygonalCircuit((2, 0, 1)))
+    assert hash(_PolygonalCircuit((0, 1, 2))) \
+        != hash(_PolygonalCircuit((0, 1, 4)))
+    assert hash(_PolygonalCircuit((0, 1, 2))) \
+        != hash(_PolygonalCircuit((0, 4, 2)))
+    assert hash(_PolygonalCircuit((0, 1, 2))) \
+        != hash(_PolygonalCircuit((4, 1, 2)))

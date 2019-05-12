@@ -39,4 +39,5 @@ def test_annotation_labels_script():
     proc_info = subprocess.run(['freesurfer-annotation-labels', ANNOTATION_FILE_PATH],
                                check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     assert not proc_info.stderr
-    check_rows(list(csv.reader(io.StringIO(proc_info.stdout.decode()), delimiter='\t')))
+    check_rows(list(csv.reader(io.StringIO(proc_info.stdout.decode()),
+                               delimiter='\t')))
