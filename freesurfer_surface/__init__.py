@@ -65,7 +65,7 @@ def setlocale(temporary_locale):
     except locale.Error as exc:
         if str(exc) == 'unsupported locale setting':
             raise UnsupportedLocaleSettingError(temporary_locale)
-        raise exc  # pragme: no cover
+        raise exc  # pragma: no cover
     finally:
         locale.setlocale(locale.LC_ALL, primary_locale)
 
