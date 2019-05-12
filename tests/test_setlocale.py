@@ -13,9 +13,17 @@ def test_set():
     assert locale.setlocale(locale.LC_ALL) == system_locale
 
 
-def test_invalid():
+def test_unsupported():
     system_locale = locale.setlocale(locale.LC_ALL)
     with pytest.raises(UnsupportedLocaleSettingError):
         with setlocale('abcdef21'):
+            pass
+    assert locale.setlocale(locale.LC_ALL) == system_locale
+
+
+def test_other_error():
+    system_locale = locale.setlocale(locale.LC_ALL)
+    with pytest.raises(TypeError):
+        with setlocale(42):
             pass
     assert locale.setlocale(locale.LC_ALL) == system_locale
