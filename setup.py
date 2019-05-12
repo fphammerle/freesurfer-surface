@@ -18,7 +18,7 @@ setuptools.setup(
     long_description=LONG_DESCRIPTION,
     author='Fabian Peter Hammerle',
     author_email='fabian@hammerle.me',
-    # url='https://github.com/fphammerle/freesurfer-surface',
+    url='https://github.com/fphammerle/freesurfer-surface',
     # TODO add license
     keywords=[
         'brain',
