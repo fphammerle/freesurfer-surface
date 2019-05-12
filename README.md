@@ -1,3 +1,20 @@
+# freesurfer-surface
+
+[![Build Status](https://travis-ci.org/fphammerle/freesurfer-surface.svg?branch=master)](https://travis-ci.org/fphammerle/freesurfer-surface)
+[![Coverage Status](https://coveralls.io/repos/github/fphammerle/freesurfer-surface/badge.svg?branch=master)](https://coveralls.io/github/fphammerle/freesurfer-surface?branch=master)
+[![Latest PyPI Version](https://img.shields.io/pypi/v/freesurfer-surface.svg)](https://pypi.org/project/freesurfer-surface/#history)
+[![Python Versions](https://img.shields.io/pypi/pyversions/freesurfer-surface.svg)](https://pypi.org/project/freesurfer-surface/)
+
+Python Library to Read and Write Surface Files in Freesurfer’s TriangularSurface Format
+
+Freesurfer https://surfer.nmr.mgh.harvard.edu/
+
+## Install
+
+```sh
+pip3 install --user freesurfer-surface
+```
+
 ## Usage
 
 ### Edit Surface File
@@ -46,4 +63,14 @@ surface.load_annotation_file('bert/label/lh.aparc.annot')
 region, = filter(lambda l: l.name == 'precentral',
                  annotation.labels.values())
 print(surface.find_label_border_polygonal_chains(region))
+```
+
+## Tests
+
+```sh
+pip3 install --user pipenv
+git clone https://github.com/fphammerle/freesurfer-surface.git
+cd freesurfer-surface
+pipenv run pylint freesurfer_surface
+pipenv run pytest --cov=freesurfer_surface
 ```
