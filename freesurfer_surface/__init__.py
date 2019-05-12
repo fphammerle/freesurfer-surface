@@ -330,6 +330,8 @@ class Surface:
             for vertex in self.vertices:
                 surface_file.write(struct.pack('>fff', *vertex))
             for triangle in self.triangles:
+                assert all(vertex_index < len(self.vertices)
+                           for vertex_index in triangle.vertex_indices)
                 surface_file.write(struct.pack('>III', *triangle.vertex_indices))
             surface_file.write(self._TAG_OLD_USEREALRAS
                                + struct.pack('>I', 1 if self.using_old_real_ras else 0))
