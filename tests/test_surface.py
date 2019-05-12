@@ -71,7 +71,7 @@ def test_triangular_strftime(creation_datetime, expected_str):
 
 def test_read_write_triangular_same(tmpdir):
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
-    output_path = tmpdir.join('surface')
+    output_path = tmpdir.join('surface').strpath
     surface.write_triangular(output_path,
                              creation_datetime=surface.creation_datetime)
     with open(output_path, 'rb') as output_file:
@@ -82,8 +82,7 @@ def test_read_write_triangular_same(tmpdir):
 def test_read_write_datetime(tmpdir):
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
     original_creation_datetime = surface.creation_datetime
-
-    output_path = tmpdir.join('surface')
+    output_path = tmpdir.join('surface').strpath
     surface.write_triangular(output_path)
     assert original_creation_datetime == surface.creation_datetime
     new_surface = Surface.read_triangular(output_path)
@@ -107,7 +106,7 @@ def test_write_read_triangular_same(tmpdir):
     expected_surface.using_old_real_ras = False
     expected_surface.volume_geometry_info = tuple(b'?\n' for _ in range(8))
     expected_surface.command_lines = [b'?', b'!']
-    output_path = tmpdir.join('surface')
+    output_path = tmpdir.join('surface').strpath
     expected_surface.write_triangular(output_path,
                                       creation_datetime=expected_surface.creation_datetime)
     resulted_surface = Surface.read_triangular(output_path)
@@ -119,7 +118,7 @@ def test_write_triangular_same_locale(tmpdir):
     surface.creator = b'pytest'
     surface.volume_geometry_info = tuple(b'?' for _ in range(8))
     creation_datetime = datetime.datetime(2018, 12, 31, 21, 42)
-    output_path = tmpdir.join('surface')
+    output_path = tmpdir.join('surface').strpath
     with setlocale('de_AT.utf8'):
         surface.write_triangular(output_path,
                                  creation_datetime=creation_datetime)
