@@ -373,10 +373,13 @@ class Surface:
         self.triangles.append(Triangle(vertex_indices[2:]
                                        + vertex_indices[:1]))
 
+    def _get_vertex_label_index(self, vertex_index: int) -> typing.Optional[int]:
+        return self.annotation.vertex_label_index.get(vertex_index, None)
+
     def _find_label_border_segments(self, label: Label) -> typing.Iterator[_LineSegment]:
         for triangle in self.triangles:
             border_vertex_indices = tuple(filter(
-                lambda i: self.annotation.vertex_label_index[i] == label.index,
+                lambda i: self._get_vertex_label_index(i) == label.index,
                 triangle.vertex_indices,
             ))
             if len(border_vertex_indices) == 2:

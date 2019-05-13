@@ -168,6 +168,25 @@ def test_add_rectangle(vertices_coords, expected_extra_vertex_coords):
     assert surface.triangles[1].vertex_indices == (2, 3, 0)
 
 
+def test__get_vertex_label_index():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    surface.load_annotation_file(ANNOTATION_FILE_PATH)
+    # pylint: disable=protected-access
+    assert surface._get_vertex_label_index(64290) == 22
+    assert surface._get_vertex_label_index(72160) == 22
+    assert surface._get_vertex_label_index(84028) == 24
+    assert surface._get_vertex_label_index(97356) == 24
+    assert surface._get_vertex_label_index(123173) == 27
+    assert surface._get_vertex_label_index(140727) == 27
+    assert surface._get_vertex_label_index(93859) == 28
+    assert surface._get_vertex_label_index(78572) == 0
+    assert surface._get_vertex_label_index(120377) == 0
+    vertex_index = surface.add_vertex(Vertex(0.0, 21.0, 42.0))
+    assert surface._get_vertex_label_index(vertex_index) is None
+    del surface.annotation.vertex_label_index[140727]
+    assert surface._get_vertex_label_index(140727) is None
+
+
 def test__find_label_border_segments():
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
     surface.load_annotation_file(ANNOTATION_FILE_PATH)
@@ -186,6 +205,22 @@ def test__find_label_border_segments():
                 not in border_segments
             assert _LineSegment((border_vertex_index, other_vertex_index)) \
                 not in border_segments
+
+
+def test__find_label_border_segments_incomplete_annotation():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    surface.load_annotation_file(ANNOTATION_FILE_PATH)
+    precentral_label, = filter(lambda l: l.name == 'precentral',
+                               surface.annotation.labels.values())
+    # pylint: disable=protected-access
+    assert surface._find_label_border_segments(precentral_label)
+    surface.triangles.append(Triangle([
+        surface.add_vertex(Vertex(0.0, 21.0 * factor, 42.0 * factor))
+        for factor in range(3)
+    ]))
+    border_segments = set(
+        surface._find_label_border_segments(precentral_label))
+    assert len(border_segments) == 417
 
 
 def test_find_label_border_polygonal_chains():
