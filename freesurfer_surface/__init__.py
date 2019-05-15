@@ -189,9 +189,15 @@ class PolygonalChain:
         else:
             raise PolygonalChainsNotOverlapingError()
 
+    def adjacent_vertex_indices(self, vertices_num: int = 2
+                                ) -> typing.Iterable[typing.Tuple[int]]:
+        return zip(*(itertools.islice(self.vertex_indices,
+                                      offset,
+                                      len(self.vertex_indices))
+                     for offset in range(vertices_num)))
+
     def segments(self) -> typing.Iterable[_LineSegment]:
-        indices = self.vertex_indices
-        return map(_LineSegment, zip(indices, itertools.islice(indices, 1, len(indices))))
+        return map(_LineSegment, self.adjacent_vertex_indices(2))
 
 
 class Label:

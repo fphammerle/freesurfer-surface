@@ -68,6 +68,33 @@ def test_connect_fail_empty(vertex_indices_a, vertex_indices_b):
         chain.connect(PolygonalChain(vertex_indices_b))
 
 
+def test_adjacent_vertex_indices_1():
+    chain = PolygonalChain((0, 1, 4, 8))
+    pairs = list(chain.adjacent_vertex_indices(1))
+    assert len(pairs) == 4
+    assert pairs[0] == (0,)
+    assert pairs[1] == (1,)
+    assert pairs[2] == (4,)
+    assert pairs[3] == (8,)
+
+
+def test_adjacent_vertex_indices_2():
+    chain = PolygonalChain((0, 1, 4, 8))
+    pairs = list(chain.adjacent_vertex_indices(2))
+    assert len(pairs) == 3
+    assert pairs[0] == (0, 1)
+    assert pairs[1] == (1, 4)
+    assert pairs[2] == (4, 8)
+
+
+def test_adjacent_vertex_indices_3():
+    chain = PolygonalChain((0, 1, 4, 8))
+    pairs = list(chain.adjacent_vertex_indices(3))
+    assert len(pairs) == 2
+    assert pairs[0] == (0, 1, 4)
+    assert pairs[1] == (1, 4, 8)
+
+
 def test_segments():
     chain = PolygonalChain((0, 1, 4, 8))
     segments = list(chain.segments())
