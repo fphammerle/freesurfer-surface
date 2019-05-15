@@ -70,7 +70,36 @@ def setlocale(temporary_locale):
         locale.setlocale(locale.LC_ALL, primary_locale)
 
 
-Vertex = collections.namedtuple('Vertex', ['right', 'anterior', 'superior'])
+class Vertex(numpy.ndarray):
+
+    def __new__(cls, right: float, anterior: float, superior: float):
+        return numpy.array((right, anterior, superior),
+                           dtype=float).view(cls)
+
+    @property
+    def right(self) -> float:
+        return self[0]
+
+    @property
+    def anterior(self) -> float:
+        return self[1]
+
+    @property
+    def superior(self) -> float:
+        return self[2]
+
+    @property
+    def __dict__(self) -> typing.Dict[str, float]:
+        return {'right': self.right,
+                'anterior': self.anterior,
+                'superior': self.superior}
+
+    def __format_coords(self) -> str:
+        return ', '.join('{}={}'.format(name, getattr(self, name))
+                         for name in ['right', 'anterior', 'superior'])
+
+    def __repr__(self) -> str:
+        return '{}({})'.format(type(self).__name__, self.__format_coords())
 
 
 class _PolygonalCircuit:

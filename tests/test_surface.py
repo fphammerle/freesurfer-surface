@@ -1,5 +1,6 @@
 import datetime
 
+import numpy
 import pytest
 
 from freesurfer_surface import setlocale, Vertex, Triangle, _LineSegment, \
@@ -110,6 +111,9 @@ def test_write_read_triangular_same(tmpdir):
     expected_surface.write_triangular(output_path,
                                       creation_datetime=expected_surface.creation_datetime)
     resulted_surface = Surface.read_triangular(output_path)
+    assert numpy.array_equal(expected_surface.vertices,
+                             resulted_surface.vertices)
+    expected_surface.vertices = resulted_surface.vertices = []
     assert vars(expected_surface) == vars(resulted_surface)
 
 
