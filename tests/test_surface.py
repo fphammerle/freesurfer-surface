@@ -153,6 +153,26 @@ def test_add_vertex():
     assert surface.vertices[1].right == pytest.approx(-3.0)
 
 
+@pytest.mark.parametrize('vertices_coords', [
+    ((0, 0, 0), (2, 4, 0), (2, 4, 3)),
+    ((0, 0, 0), (2, 4, 0), (2, 4, 3), (0, 0, 3)),
+    ((1, 1, 0), (3, 5, 0), (3, 5, 3), (1, 1, 3)),
+    ((1, 1, 7), (3, 5, 7), (3, 5, 3), (1, 1, 3)),
+    ((1, 1, 1), (3, 5, 7), (3, 5, 9), (1, 1, 3)),
+    ((3, 5, 7), (1, 1, 1), (1, 1, 3)),
+    ((3, 5, 7), (1, 1, 1), (1, 1, 3), (3, 5, 9)),
+])
+def test_add_rectangle(vertices_coords):
+    surface = Surface()
+    for vertex_coords in vertices_coords:
+        surface.add_vertex(Vertex(*(float(c) for c in vertex_coords)))
+    surface.add_rectangle(range(len(vertices_coords)))
+    assert len(surface.vertices) == 4
+    assert len(surface.triangles) == 2
+    assert surface.triangles[0].vertex_indices == (0, 1, 2)
+    assert surface.triangles[1].vertex_indices == (2, 3, 0)
+
+
 @pytest.mark.parametrize(('vertices_coords', 'expected_extra_vertex_coords'), [
     (((0, 0, 0), (2, 4, 0), (2, 4, 3)), (0, 0, 3)),
     (((1, 1, 0), (3, 5, 0), (3, 5, 3)), (1, 1, 3)),
@@ -160,16 +180,13 @@ def test_add_vertex():
     (((1, 1, 1), (3, 5, 7), (3, 5, 9)), (1, 1, 3)),
     (((3, 5, 7), (1, 1, 1), (1, 1, 3)), (3, 5, 9)),
 ])
-def test_add_rectangle(vertices_coords, expected_extra_vertex_coords):
+def test_add_rectangle_3(vertices_coords, expected_extra_vertex_coords):
     surface = Surface()
     for vertex_coords in vertices_coords:
         surface.add_vertex(Vertex(*(float(c) for c in vertex_coords)))
     surface.add_rectangle(range(3))
     assert tuple(surface.vertices[3]) \
         == pytest.approx(expected_extra_vertex_coords)
-    assert len(surface.triangles) == 2
-    assert surface.triangles[0].vertex_indices == (0, 1, 2)
-    assert surface.triangles[1].vertex_indices == (2, 3, 0)
 
 
 def test__get_vertex_label_index():

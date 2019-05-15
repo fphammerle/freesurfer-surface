@@ -392,12 +392,13 @@ class Surface:
 
     def add_rectangle(self, vertex_indices: typing.Iterable[int]) -> typing.Iterable[int]:
         vertex_indices = list(vertex_indices)
-        assert len(vertex_indices) == 3
-        vertex_coords = [numpy.array(self.vertices[vertex_index])
-                         for vertex_index in vertex_indices]
-        vertex_coords.append(vertex_coords[0]
-                             + vertex_coords[2] - vertex_coords[1])
-        vertex_indices.append(self.add_vertex(Vertex(*vertex_coords[3])))
+        if len(vertex_indices) == 3:
+            vertex_indices.append(self.add_vertex(
+                self.vertices[vertex_indices[0]]
+                + self.vertices[vertex_indices[2]]
+                - self.vertices[vertex_indices[1]]
+            ))
+        assert len(vertex_indices) == 4
         self.triangles.append(Triangle(vertex_indices[:3]))
         self.triangles.append(Triangle(vertex_indices[2:]
                                        + vertex_indices[:1]))
