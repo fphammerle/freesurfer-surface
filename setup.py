@@ -2,10 +2,8 @@ import os
 
 import setuptools
 
-import freesurfer_surface
-
-
-LONG_DESCRIPTION = freesurfer_surface.__doc__.strip()
+with open('README.rst', 'r') as readme:
+    LONG_DESCRIPTION = readme.read()
 
 setuptools.setup(
     name='freesurfer-surface',
@@ -14,7 +12,8 @@ setuptools.setup(
         # `version` triggers pylint C0103
         'write_to_template': "__version__ = '{version}'\n",
     },
-    description=LONG_DESCRIPTION.split(sep='\n', maxsplit=1)[0],
+    description="Python Library to Read and Write Surface Files"
+                " in Freesurfer's TriangularSurface Format",
     long_description=LONG_DESCRIPTION,
     author='Fabian Peter Hammerle',
     author_email='fabian@hammerle.me',

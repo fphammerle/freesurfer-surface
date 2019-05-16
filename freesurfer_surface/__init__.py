@@ -47,10 +47,7 @@ import typing
 
 import numpy
 
-try:
-    from freesurfer_surface.version import __version__
-except ImportError:  # pragma: no cover
-    __version__ = None
+from freesurfer_surface.version import __version__
 
 
 class UnsupportedLocaleSettingError(locale.Error):
