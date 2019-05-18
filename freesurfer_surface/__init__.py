@@ -104,16 +104,11 @@ class _PolygonalCircuit:
     _VERTEX_INDICES_TYPE = typing.Tuple[int]
 
     def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
-        self.vertex_indices = vertex_indices
+        self._vertex_indices = tuple(vertex_indices)
 
     @property
     def vertex_indices(self):
         return self._vertex_indices
-
-    @vertex_indices.setter
-    def vertex_indices(self, indices: _VERTEX_INDICES_TYPE):
-        # pylint: disable=attribute-defined-outside-init
-        self._vertex_indices = tuple(indices)
 
     def _normalize(self) -> '_PolygonalCircuit':
         min_vertex_index_index = self.vertex_indices.index(
@@ -165,12 +160,9 @@ class _LineSegment(_PolygonalCircuit):
 
 class Triangle(_PolygonalCircuit):
 
-    # pylint: disable=no-member
-    @_PolygonalCircuit.vertex_indices.setter
-    def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
-        assert len(indices) == 3
-        # pylint: disable=attribute-defined-outside-init
-        self._vertex_indices = tuple(indices)
+    def __init__(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
+        super().__init__(indices)
+        assert len(self.vertex_indices) == 3
 
     def __repr__(self) -> str:
         return 'Triangle(vertex_indices={})'.format(self.vertex_indices)
