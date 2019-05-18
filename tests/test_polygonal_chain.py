@@ -1,6 +1,6 @@
 import pytest
 
-from freesurfer_surface import PolygonalChain, PolygonalChainsNotOverlapingError, _LineSegment
+from freesurfer_surface import PolygonalChain, PolygonalChainsNotOverlapingError, LineSegment
 
 
 def test_init():
@@ -99,6 +99,6 @@ def test_segments():
     chain = PolygonalChain((0, 1, 4, 8))
     segments = list(chain.segments())
     assert len(segments) == 3
-    assert segments[0] == _LineSegment((0, 1))
-    assert segments[1] == _LineSegment((1, 4))
-    assert segments[2] == _LineSegment((4, 8))
+    assert segments[0] == LineSegment((0, 1))
+    assert segments[1] == LineSegment((1, 4))
+    assert segments[2] == LineSegment((4, 8))
