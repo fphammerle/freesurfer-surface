@@ -493,3 +493,20 @@ def test_remove_unused_vertices_none():
     surface.remove_unused_vertices()
     assert len(surface.vertices) == 155622
     assert len(surface.triangles) == 311240
+
+
+def test_remove_unused_vertices_single():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    assert len(surface.vertices) == 155622
+    assert len(surface.triangles) == 311240
+    assert surface.triangles[-1] == Triangle((136143, 138007, 137078))
+    surface.triangles = list(filter(lambda t: 42 not in t.vertex_indices,
+                                    surface.triangles))
+    assert surface._unused_vertices() == {42}
+    surface.remove_unused_vertices()
+    assert len(surface.vertices) == 155622 - 1
+    assert len(surface.triangles) == 311240 - 7
+    assert surface.triangles[-1] == Triangle((136142, 138006, 137077))
+    assert all(vertex_index < len(surface.vertices)
+               for triangle in surface.triangles
+               for vertex_index in triangle.vertex_indices)
