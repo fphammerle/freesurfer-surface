@@ -430,3 +430,66 @@ def test__unused_vertices_real():
     surface.triangles = list(filter(lambda t: 42 not in t.vertex_indices,
                                     surface.triangles))
     assert surface._unused_vertices() == {42}
+
+
+def test_remove_unused_vertices_all():
+    surface = Surface()
+    for i in range(5):
+        surface.add_vertex(Vertex(i, i, i))
+    assert len(surface.vertices) == 5
+    surface.remove_unused_vertices()
+    assert not surface.vertices
+    surface.remove_unused_vertices()
+    assert not surface.vertices
+
+
+def test_remove_unused_vertices_almost_all():
+    surface = Surface()
+    for i in range(5):
+        surface.add_vertex(Vertex(i, i, i))
+    assert len(surface.vertices) == 5
+    surface.triangles.append(Triangle((0, 2, 3)))
+    surface.remove_unused_vertices()
+    assert len(surface.vertices) == 3
+    assert surface.vertices[0] == pytest.approx(Vertex(0, 0, 0))
+    assert surface.vertices[1] == pytest.approx(Vertex(2, 2, 2))
+    assert surface.vertices[2] == pytest.approx(Vertex(3, 3, 3))
+    assert len(surface.triangles) == 1
+    assert surface.triangles[0] == Triangle((0, 1, 2))
+    del surface.triangles[0]
+    surface.remove_unused_vertices()
+    assert not surface.vertices
+
+
+def test_remove_unused_vertices_some():
+    surface = Surface()
+    for i in range(9):
+        surface.add_vertex(Vertex(i, i, i))
+    surface.triangles.append(Triangle((0, 2, 3)))
+    surface.triangles.append(Triangle((3, 4, 5)))
+    surface.triangles.append(Triangle((3, 2, 5)))
+    surface.triangles.append(Triangle((3, 2, 8)))
+    surface.remove_unused_vertices()
+    assert len(surface.vertices) == 6
+    assert surface.vertices[0] == pytest.approx(Vertex(0, 0, 0))
+    assert surface.vertices[1] == pytest.approx(Vertex(2, 2, 2))
+    assert surface.vertices[2] == pytest.approx(Vertex(3, 3, 3))
+    assert surface.vertices[3] == pytest.approx(Vertex(4, 4, 4))
+    assert surface.vertices[4] == pytest.approx(Vertex(5, 5, 5))
+    assert surface.vertices[5] == pytest.approx(Vertex(8, 8, 8))
+    assert len(surface.triangles) == 4
+    assert surface.triangles[0] == Triangle((0, 1, 2))
+    assert surface.triangles[1] == Triangle((2, 3, 4))
+    assert surface.triangles[2] == Triangle((2, 1, 4))
+    assert surface.triangles[3] == Triangle((2, 1, 5))
+    surface.remove_unused_vertices()
+    assert len(surface.triangles) == 4
+
+
+def test_remove_unused_vertices_none():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    assert len(surface.vertices) == 155622
+    assert len(surface.triangles) == 311240
+    surface.remove_unused_vertices()
+    assert len(surface.vertices) == 155622
+    assert len(surface.triangles) == 311240
