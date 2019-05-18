@@ -18,6 +18,15 @@ def test_init_iterator():
     assert circuit.vertex_indices == (1, 2, 3, 5)
 
 
+def test_init_invalid_type():
+    with pytest.raises(Exception):
+        PolygonalCircuit((0, 1, 2.0))
+    with pytest.raises(Exception):
+        PolygonalCircuit((Vertex(2, 3, 4),))
+    with pytest.raises(Exception):
+        PolygonalCircuit((0, 1, Vertex(2, 3, 4)))
+
+
 @pytest.mark.parametrize(('source_vertex_indices', 'expected_vertex_indices'), [
     ((1,), (1,)),
     ((1, 2), (1, 2)),
