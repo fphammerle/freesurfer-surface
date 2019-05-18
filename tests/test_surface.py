@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 from freesurfer_surface import setlocale, Vertex, Triangle, _LineSegment, \
-                               Annotation, Surface, _PolygonalCircuit
+                               Annotation, Surface, PolygonalCircuit
 
 from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
 
@@ -266,7 +266,7 @@ def test_find_borders_single():
     single_index = surface.add_vertex(Vertex(0, 21, 42))
     borders = list(surface.find_borders())
     assert len(borders) == 1
-    assert borders[0] == _PolygonalCircuit((single_index,))
+    assert borders[0] == PolygonalCircuit((single_index,))
 
 
 def test_find_borders_singles():
@@ -275,9 +275,9 @@ def test_find_borders_singles():
                       for i in range(3)]
     borders = set(surface.find_borders())
     assert len(borders) == 3
-    assert _PolygonalCircuit((single_indices[0],)) in borders
-    assert _PolygonalCircuit((single_indices[1],)) in borders
-    assert _PolygonalCircuit((single_indices[2],)) in borders
+    assert PolygonalCircuit((single_indices[0],)) in borders
+    assert PolygonalCircuit((single_indices[1],)) in borders
+    assert PolygonalCircuit((single_indices[2],)) in borders
 
 
 def test_find_borders_single_triangle_simple():
@@ -287,7 +287,7 @@ def test_find_borders_single_triangle_simple():
     surface.triangles.append(Triangle(vertex_indices))
     borders = set(surface.find_borders())
     assert len(borders) == 1
-    assert _PolygonalCircuit(vertex_indices) in borders
+    assert PolygonalCircuit(vertex_indices) in borders
 
 
 def test_find_borders_single_triangle_real():
@@ -297,7 +297,7 @@ def test_find_borders_single_triangle_real():
     surface.triangles.append(Triangle(vertex_indices))
     borders = set(surface.find_borders())
     assert len(borders) == 1
-    assert _PolygonalCircuit(vertex_indices) in borders
+    assert PolygonalCircuit(vertex_indices) in borders
 
 
 def test_find_borders_remove_triangle():
@@ -328,17 +328,17 @@ def test_find_borders_remove_adjacent_triangles():
     borders = set(surface.find_borders())
     assert len(borders) == 2
     assert triangles[0] in borders
-    assert _PolygonalCircuit((137076, 136141, 135263, 136142)) in borders
+    assert PolygonalCircuit((137076, 136141, 135263, 136142)) in borders
     surface.triangles.pop(270682)
     borders = set(surface.find_borders())
     assert len(borders) == 2
     assert triangles[0] in borders
-    assert _PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
+    assert PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
     surface.triangles.pop(274320)
     borders = set(surface.find_borders())
     assert len(borders) == 2
-    assert _PolygonalCircuit((136143, 138007, 138008, 137078)) in borders
-    assert _PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
+    assert PolygonalCircuit((136143, 138007, 138008, 137078)) in borders
+    assert PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
 
 
 def test__get_vertex_label_index():

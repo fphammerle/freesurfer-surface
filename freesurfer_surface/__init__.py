@@ -99,7 +99,7 @@ class Vertex(numpy.ndarray):
         return '{}({})'.format(type(self).__name__, self.__format_coords())
 
 
-class _PolygonalCircuit:
+class PolygonalCircuit:
 
     _VERTEX_INDICES_TYPE = typing.Tuple[int]
 
@@ -110,7 +110,7 @@ class _PolygonalCircuit:
     def vertex_indices(self):
         return self._vertex_indices
 
-    def _normalize(self) -> '_PolygonalCircuit':
+    def _normalize(self) -> 'PolygonalCircuit':
         min_vertex_index_index = self.vertex_indices.index(
             min(self.vertex_indices))
         previous_index = self.vertex_indices[min_vertex_index_index - 1]
@@ -124,7 +124,7 @@ class _PolygonalCircuit:
                               + self.vertex_indices[:min_vertex_index_index]
         return type(self)(vertex_indices)
 
-    def __eq__(self, other: '_PolygonalCircuit') -> bool:
+    def __eq__(self, other: 'PolygonalCircuit') -> bool:
         # pylint: disable=protected-access
         return self._normalize().vertex_indices == other._normalize().vertex_indices
 
@@ -145,11 +145,11 @@ class _PolygonalCircuit:
                      for offset in range(vertices_num)))
 
 
-class _LineSegment(_PolygonalCircuit):
+class _LineSegment(PolygonalCircuit):
 
     # pylint: disable=no-member
-    @_PolygonalCircuit.vertex_indices.setter
-    def vertex_indices(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
+    @PolygonalCircuit.vertex_indices.setter
+    def vertex_indices(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
         assert len(indices) == 2
         # pylint: disable=attribute-defined-outside-init
         self._vertex_indices = tuple(indices)
@@ -158,9 +158,9 @@ class _LineSegment(_PolygonalCircuit):
         return '_LineSegment(vertex_indices={})'.format(self.vertex_indices)
 
 
-class Triangle(_PolygonalCircuit):
+class Triangle(PolygonalCircuit):
 
-    def __init__(self, indices: _PolygonalCircuit._VERTEX_INDICES_TYPE):
+    def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
         super().__init__(indices)
         assert len(self.vertex_indices) == 3
 
@@ -429,12 +429,12 @@ class Surface:
                 counts[vertex_index_pair[1]][vertex_index_pair[0]] += 1
         return counts
 
-    def find_borders(self) -> typing.Iterator[_PolygonalCircuit]:
+    def find_borders(self) -> typing.Iterator[PolygonalCircuit]:
         border_neighbours = {}
         for vertex_index, neighbour_counts \
                 in self._triangle_count_by_adjacent_vertex_indices().items():
             if not neighbour_counts:
-                yield _PolygonalCircuit((vertex_index,))
+                yield PolygonalCircuit((vertex_index,))
             else:
                 neighbours = [neighbour_index for neighbour_index, counts
                               in neighbour_counts.items()
@@ -451,7 +451,7 @@ class Surface:
                 neighbour_indices.remove(cycle_indices[-1])
                 cycle_indices.append(vertex_index)
                 vertex_index, = neighbour_indices
-            yield _PolygonalCircuit(cycle_indices)
+            yield PolygonalCircuit(cycle_indices)
 
     def _get_vertex_label_index(self, vertex_index: int) -> typing.Optional[int]:
         return self.annotation.vertex_label_index.get(vertex_index, None)
