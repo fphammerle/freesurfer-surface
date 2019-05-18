@@ -50,6 +50,17 @@ def test_vars():
     (Vertex(0, 0, 0), Vertex(1, 1, 1), 3**(1/2)),
     (Vertex(1, 2, 3), Vertex(2, 3, 4), 3**(1/2)),
     (Vertex(1, 2, 3), Vertex(5, 8, -1), (16+36+16)**(1/2)),
+    (Vertex(0, 0, 0), [Vertex(0, 0, 1), Vertex(0, 0, 2)], [1, 2]),
+    (Vertex(0, 0, 0), (Vertex(0, 0, 1), Vertex(0, 0, 2)), [1, 2]),
+    (Vertex(0, 0, 0),
+     numpy.vstack((Vertex(0, 0, 1), Vertex(0, 0, 2))),
+     [1, 2]),
+    (Vertex(1, 2, 3),
+     (Vertex(2, 3, 4), Vertex(3, 4, 5)),
+     [3**(1/2), 12**(1/2)]),
+    (Vertex(1, 2, 3),
+     (Vertex(2, 3, 4), Vertex(3, 4, 5), Vertex(3, 4, 6)),
+     [3**(1/2), 12**(1/2), 17**(1/2)]),
 ])
 def test_distance(vertex_a, vertex_b, expected_distance_mm):
     assert vertex_a.distance_mm(vertex_b) \
