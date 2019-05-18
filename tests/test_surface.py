@@ -3,7 +3,7 @@ import datetime
 import numpy
 import pytest
 
-from freesurfer_surface import setlocale, Vertex, Triangle, _LineSegment, \
+from freesurfer_surface import setlocale, Vertex, Triangle, LineSegment, \
                                Annotation, Surface, PolygonalCircuit
 
 from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
@@ -369,14 +369,14 @@ def test__find_label_border_segments():
     border_segments = set(
         surface._find_label_border_segments(precentral_label))
     assert len(border_segments) == 417
-    assert _LineSegment((33450, 32065)) in border_segments
-    assert _LineSegment((33454, 33450)) in border_segments
+    assert LineSegment((33450, 32065)) in border_segments
+    assert LineSegment((33454, 33450)) in border_segments
     for border_vertex_index in [33450, 33454, 32065]:
         assert surface.annotation.vertex_label_index[border_vertex_index] == precentral_label.index
         for other_vertex_index in [32064, 33449, 33455, 33449, 33455]:
-            assert _LineSegment((other_vertex_index, border_vertex_index)) \
+            assert LineSegment((other_vertex_index, border_vertex_index)) \
                 not in border_segments
-            assert _LineSegment((border_vertex_index, other_vertex_index)) \
+            assert LineSegment((border_vertex_index, other_vertex_index)) \
                 not in border_segments
 
 

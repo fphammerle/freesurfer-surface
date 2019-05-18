@@ -139,14 +139,14 @@ class PolygonalCircuit:
                      for offset in range(vertices_num)))
 
 
-class _LineSegment(PolygonalCircuit):
+class LineSegment(PolygonalCircuit):
 
     def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
         super().__init__(indices)
         assert len(self.vertex_indices) == 2
 
     def __repr__(self) -> str:
-        return '_LineSegment(vertex_indices={})'.format(self.vertex_indices)
+        return 'LineSegment(vertex_indices={})'.format(self.vertex_indices)
 
 
 class Triangle(PolygonalCircuit):
@@ -197,8 +197,8 @@ class PolygonalChain:
                                       len(self.vertex_indices))
                      for offset in range(vertices_num)))
 
-    def segments(self) -> typing.Iterable[_LineSegment]:
-        return map(_LineSegment, self.adjacent_vertex_indices(2))
+    def segments(self) -> typing.Iterable[LineSegment]:
+        return map(LineSegment, self.adjacent_vertex_indices(2))
 
 
 class Label:
@@ -447,14 +447,14 @@ class Surface:
     def _get_vertex_label_index(self, vertex_index: int) -> typing.Optional[int]:
         return self.annotation.vertex_label_index.get(vertex_index, None)
 
-    def _find_label_border_segments(self, label: Label) -> typing.Iterator[_LineSegment]:
+    def _find_label_border_segments(self, label: Label) -> typing.Iterator[LineSegment]:
         for triangle in self.triangles:
             border_vertex_indices = tuple(filter(
                 lambda i: self._get_vertex_label_index(i) == label.index,
                 triangle.vertex_indices,
             ))
             if len(border_vertex_indices) == 2:
-                yield _LineSegment(border_vertex_indices)
+                yield LineSegment(border_vertex_indices)
 
     def find_label_border_polygonal_chains(self, label: Label) -> typing.Iterator[PolygonalChain]:
         segments = set(self._find_label_border_segments(label))
