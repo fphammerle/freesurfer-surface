@@ -256,6 +256,91 @@ def test__triangle_count_by_adjacent_vertex_indices_real():
         == len(surface.triangles) * 6
 
 
+def test_find_borders_none():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    assert not list(surface.find_borders())
+
+
+def test_find_borders_single():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    single_index = surface.add_vertex(Vertex(0, 21, 42))
+    borders = list(surface.find_borders())
+    assert len(borders) == 1
+    assert borders[0] == _PolygonalCircuit((single_index,))
+
+
+def test_find_borders_singles():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    single_indices = [surface.add_vertex(Vertex(i, 21, 42))
+                      for i in range(3)]
+    borders = set(surface.find_borders())
+    assert len(borders) == 3
+    assert _PolygonalCircuit((single_indices[0],)) in borders
+    assert _PolygonalCircuit((single_indices[1],)) in borders
+    assert _PolygonalCircuit((single_indices[2],)) in borders
+
+
+def test_find_borders_single_triangle_simple():
+    surface = Surface()
+    vertex_indices = [surface.add_vertex(Vertex(i, 21, 42))
+                      for i in range(3)]
+    surface.triangles.append(Triangle(vertex_indices))
+    borders = set(surface.find_borders())
+    assert len(borders) == 1
+    assert _PolygonalCircuit(vertex_indices) in borders
+
+
+def test_find_borders_single_triangle_real():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    vertex_indices = [surface.add_vertex(Vertex(i, 21, 42))
+                      for i in range(3)]
+    surface.triangles.append(Triangle(vertex_indices))
+    borders = set(surface.find_borders())
+    assert len(borders) == 1
+    assert _PolygonalCircuit(vertex_indices) in borders
+
+
+def test_find_borders_remove_triangle():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    triangle = surface.triangles.pop()
+    borders = set(surface.find_borders())
+    assert len(borders) == 1
+    assert triangle in borders
+
+
+def test_find_borders_remove_non_adjacent_triangles():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    triangles = [surface.triangles.pop(),
+                 surface.triangles.pop()]
+    borders = set(surface.find_borders())
+    assert len(borders) == 2
+    assert triangles[0] in borders
+    assert triangles[1] in borders
+
+
+def test_find_borders_remove_adjacent_triangles():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    triangles = [surface.triangles.pop(),
+                 surface.triangles.pop()]
+    triangles.append(surface.triangles.pop(270682))
+    assert triangles[1] == Triangle((136141, 136142, 137076))
+    assert triangles[2] == Triangle((136141, 136142, 135263))
+    borders = set(surface.find_borders())
+    assert len(borders) == 2
+    assert triangles[0] in borders
+    assert _PolygonalCircuit((137076, 136141, 135263, 136142)) in borders
+    surface.triangles.pop(270682)
+    borders = set(surface.find_borders())
+    assert len(borders) == 2
+    assert triangles[0] in borders
+    assert _PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
+    surface.triangles.pop(274320)
+    borders = set(surface.find_borders())
+    assert len(borders) == 2
+    assert _PolygonalCircuit((136143, 138007, 138008, 137078)) in borders
+    assert _PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
+
+
 def test__get_vertex_label_index():
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
     surface.load_annotation_file(ANNOTATION_FILE_PATH)
