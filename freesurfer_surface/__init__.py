@@ -490,3 +490,14 @@ class Surface:
             for vertex_index in triangle.vertex_indices:
                 vertex_indices.discard(vertex_index)
         return vertex_indices
+
+    def remove_unused_vertices(self) -> None:
+        vertex_index_conversion = [0] * len(self.vertices)
+        for vertex_index in sorted(self._unused_vertices(), reverse=True):
+            del self.vertices[vertex_index]
+            vertex_index_conversion[vertex_index] -= 1
+        vertex_index_conversion = numpy.cumsum(vertex_index_conversion)
+        for triangle_index in range(len(self.triangles)):
+            self.triangles[triangle_index] \
+                = Triangle(map(lambda i: i + vertex_index_conversion[i],
+                               self.triangles[triangle_index].vertex_indices))
