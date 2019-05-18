@@ -147,12 +147,9 @@ class PolygonalCircuit:
 
 class _LineSegment(PolygonalCircuit):
 
-    # pylint: disable=no-member
-    @PolygonalCircuit.vertex_indices.setter
-    def vertex_indices(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
-        assert len(indices) == 2
-        # pylint: disable=attribute-defined-outside-init
-        self._vertex_indices = tuple(indices)
+    def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
+        super().__init__(indices)
+        assert len(self.vertex_indices) == 2
 
     def __repr__(self) -> str:
         return '_LineSegment(vertex_indices={})'.format(self.vertex_indices)

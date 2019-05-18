@@ -1,4 +1,11 @@
+import pytest
+
 from freesurfer_surface import _LineSegment
+
+
+def test_init_fail():
+    with pytest.raises(Exception):
+        _LineSegment((1, 2, 3))
 
 
 def test_eq():
