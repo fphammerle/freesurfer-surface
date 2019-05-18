@@ -113,6 +113,7 @@ class PolygonalCircuit:
 
     def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
         self._vertex_indices = tuple(vertex_indices)
+        assert all(isinstance(idx, int) for idx in self._vertex_indices)
 
     @property
     def vertex_indices(self):
@@ -507,5 +508,5 @@ class Surface:
         vertex_index_conversion = numpy.cumsum(vertex_index_conversion)
         for triangle_index in range(len(self.triangles)):
             self.triangles[triangle_index] \
-                = Triangle(map(lambda i: i + vertex_index_conversion[i],
+                = Triangle(map(lambda i: i + int(vertex_index_conversion[i]),
                                self.triangles[triangle_index].vertex_indices))
