@@ -110,7 +110,7 @@ class PolygonalCircuit:
     def vertex_indices(self):
         return self._vertex_indices
 
-    def _normalize(self) -> '_PolygonalCircuit':
+    def _normalize(self) -> 'PolygonalCircuit':
         vertex_indices = collections.deque(self.vertex_indices)
         vertex_indices.rotate(-numpy.argmin(self.vertex_indices))
         if len(vertex_indices) > 2 and vertex_indices[-1] < vertex_indices[1]:
