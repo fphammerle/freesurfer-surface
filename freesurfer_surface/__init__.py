@@ -477,3 +477,10 @@ class Surface:
                 available_chains = checked_chains
             assert all((segment in segments) for segment in chain.segments())
             yield chain
+
+    def _unused_vertices(self) -> typing.Set[int]:
+        vertex_indices = set(range(len(self.vertices)))
+        for triangle in self.triangles:
+            for vertex_index in triangle.vertex_indices:
+                vertex_indices.discard(vertex_index)
+        return vertex_indices

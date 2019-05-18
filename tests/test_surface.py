@@ -408,3 +408,25 @@ def test_find_label_border_polygonal_chains():
     vertex_indices_normalized = vertex_indices[min_index:] + vertex_indices[:min_index]
     assert vertex_indices_normalized[:4] == [32065, 32072, 32073, 32080]
     assert vertex_indices_normalized[-4:] == [36281, 34870, 33454, 33450]
+
+
+def test__unused_vertices():
+    surface = Surface()
+    assert not surface._unused_vertices()
+    for i in range(4):
+        surface.add_vertex(Vertex(i, i, i))
+    assert surface._unused_vertices() == {0, 1, 2, 3}
+    surface.triangles.append(Triangle((0, 2, 3)))
+    assert surface._unused_vertices() == {1}
+    surface.triangles.append(Triangle((0, 3, 1)))
+    assert not surface._unused_vertices()
+    del surface.triangles[0]
+    assert surface._unused_vertices() == {2}
+
+
+def test__unused_vertices_real():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    assert not surface._unused_vertices()
+    surface.triangles = list(filter(lambda t: 42 not in t.vertex_indices,
+                                    surface.triangles))
+    assert surface._unused_vertices() == {42}
