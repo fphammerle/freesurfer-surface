@@ -4,9 +4,11 @@ import numpy
 import pytest
 
 from freesurfer_surface import setlocale, Vertex, Triangle, _LineSegment, \
-                               Annotation, Surface
+                               Annotation, Surface, _PolygonalCircuit
 
 from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
+
+# pylint: disable=protected-access
 
 
 def test_read_triangular():
@@ -187,6 +189,71 @@ def test_add_rectangle_3(vertices_coords, expected_extra_vertex_coords):
     surface.add_rectangle(range(3))
     assert tuple(surface.vertices[3]) \
         == pytest.approx(expected_extra_vertex_coords)
+
+
+def test__triangle_count_by_adjacent_vertex_indices_empty():
+    surface = Surface()
+    assert surface._triangle_count_by_adjacent_vertex_indices() == {}
+
+
+def test__triangle_count_by_adjacent_vertex_indices_none():
+    surface = Surface()
+    surface.vertices.append(Vertex(1, 0, 0))
+    surface.vertices.append(Vertex(2, 0, 0))
+    surface.vertices.append(Vertex(3, 0, 0))
+    assert surface._triangle_count_by_adjacent_vertex_indices() \
+        == {0: {}, 1: {}, 2: {}}
+
+
+def test__triangle_count_by_adjacent_vertex_indices_single():
+    surface = Surface()
+    surface.triangles.append(Triangle([surface.add_vertex(Vertex(i, 0, 0))
+                                       for i in range(3)]))
+    assert surface._triangle_count_by_adjacent_vertex_indices() \
+        == {0: {1: 1, 2: 1},
+            1: {0: 1, 2: 1},
+            2: {0: 1, 1: 1}}
+
+
+def test__triangle_count_by_adjacent_vertex_indices_multiple():
+    surface = Surface()
+    for i in range(5):
+        surface.add_vertex(Vertex(i, 0, 0))
+    surface.triangles.append(Triangle((0, 1, 2)))
+    surface.triangles.append(Triangle((3, 1, 2)))
+    assert surface._triangle_count_by_adjacent_vertex_indices() \
+        == {0: {1: 1, 2: 1},
+            1: {0: 1, 2: 2, 3: 1},
+            2: {0: 1, 1: 2, 3: 1},
+            3: {1: 1, 2: 1},
+            4: {}}
+    surface.triangles.append(Triangle((3, 4, 2)))
+    assert surface._triangle_count_by_adjacent_vertex_indices() \
+        == {0: {1: 1, 2: 1},
+            1: {0: 1, 2: 2, 3: 1},
+            2: {0: 1, 1: 2, 3: 2, 4: 1},
+            3: {1: 1, 2: 2, 4: 1},
+            4: {2: 1, 3: 1}}
+    surface.triangles.append(Triangle((3, 0, 2)))
+    assert surface._triangle_count_by_adjacent_vertex_indices() \
+        == {0: {1: 1, 2: 2, 3: 1},
+            1: {0: 1, 2: 2, 3: 1},
+            2: {0: 2, 1: 2, 3: 3, 4: 1},
+            3: {0: 1, 1: 1, 2: 3, 4: 1},
+            4: {2: 1, 3: 1}}
+
+
+def test__triangle_count_by_adjacent_vertex_indices_real():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    counts = surface._triangle_count_by_adjacent_vertex_indices()
+    assert len(counts) == len(surface.vertices)
+    assert all(counts.values())
+    assert all(count == 2
+               for vertex_counts in counts.values()
+               for count in vertex_counts.values())
+    assert sum(count for vertex_counts in counts.values()
+               for count in vertex_counts.values()) \
+        == len(surface.triangles) * 6
 
 
 def test__get_vertex_label_index():
