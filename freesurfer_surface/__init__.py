@@ -510,3 +510,6 @@ class Surface:
             self.triangles[triangle_index] \
                 = Triangle(map(lambda i: i + int(vertex_index_conversion[i]),
                                self.triangles[triangle_index].vertex_indices))
+
+    def _triangles_vertex_indices(self) -> numpy.ndarray:
+        return numpy.vstack([t.vertex_indices for t in self.triangles])

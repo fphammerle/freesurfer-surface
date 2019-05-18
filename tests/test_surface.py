@@ -510,3 +510,15 @@ def test_remove_unused_vertices_single():
     assert all(vertex_index < len(surface.vertices)
                for triangle in surface.triangles
                for vertex_index in triangle.vertex_indices)
+
+
+def test__triangles_vertex_indices():
+    surface = Surface()
+    for i in range(5):
+        surface.add_vertex(Vertex(i, i, i))
+    surface.triangles.append(Triangle((0, 1, 2)))
+    surface.triangles.append(Triangle((3, 1, 2)))
+    surface.triangles.append(Triangle((3, 1, 4)))
+    surface.triangles.append(Triangle((5, 1, 4)))
+    assert (surface._triangles_vertex_indices()
+            == [[0, 1, 2], [3, 1, 2], [3, 1, 4], [5, 1, 4]]).all()
