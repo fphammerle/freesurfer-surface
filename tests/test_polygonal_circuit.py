@@ -70,3 +70,53 @@ def test_hash_reverse():
         == hash(_PolygonalCircuit((1, 0, 4, 2)))
     assert hash(_PolygonalCircuit((0, 1, 2, 4))) \
         != hash(_PolygonalCircuit((1, 4, 0, 2)))
+
+
+def test_adjacent_vertex_indices_1():
+    chain = _PolygonalCircuit((0, 1, 4, 8))
+    singles = list(chain.adjacent_vertex_indices(1))
+    assert len(singles) == 4
+    assert singles[0] == (0,)
+    assert singles[1] == (1,)
+    assert singles[2] == (4,)
+    assert singles[3] == (8,)
+
+
+def test_adjacent_vertex_indices_2():
+    chain = _PolygonalCircuit((0, 1, 4, 8))
+    pairs = list(chain.adjacent_vertex_indices(2))
+    assert len(pairs) == 4
+    assert pairs[0] == (0, 1)
+    assert pairs[1] == (1, 4)
+    assert pairs[2] == (4, 8)
+    assert pairs[3] == (8, 0)
+
+
+def test_adjacent_vertex_indices_3():
+    chain = _PolygonalCircuit((0, 1, 4, 8))
+    triplets = list(chain.adjacent_vertex_indices(3))
+    assert len(triplets) == 4
+    assert triplets[0] == (0, 1, 4)
+    assert triplets[1] == (1, 4, 8)
+    assert triplets[2] == (4, 8, 0)
+    assert triplets[3] == (8, 0, 1)
+
+
+def test_adjacent_vertex_indices_4():
+    chain = _PolygonalCircuit((0, 1, 4, 8))
+    quadruples = list(chain.adjacent_vertex_indices(4))
+    assert len(quadruples) == 4
+    assert quadruples[0] == (0, 1, 4, 8)
+    assert quadruples[1] == (1, 4, 8, 0)
+    assert quadruples[2] == (4, 8, 0, 1)
+    assert quadruples[3] == (8, 0, 1, 4)
+
+
+def test_adjacent_vertex_indices_5():
+    chain = _PolygonalCircuit((0, 1, 4, 8))
+    quintuples = list(chain.adjacent_vertex_indices(5))
+    assert len(quintuples) == 4
+    assert quintuples[0] == (0, 1, 4, 8, 0)
+    assert quintuples[1] == (1, 4, 8, 0, 1)
+    assert quintuples[2] == (4, 8, 0, 1, 4)
+    assert quintuples[3] == (8, 0, 1, 4, 8)

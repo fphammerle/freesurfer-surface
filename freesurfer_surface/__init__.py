@@ -131,6 +131,18 @@ class _PolygonalCircuit:
         # pylint: disable=protected-access
         return hash(self._normalize()._vertex_indices)
 
+    def adjacent_vertex_indices(self, vertices_num: int = 2
+                                ) -> typing.Iterable[typing.Tuple[int]]:
+        vertex_indices_cycle = list(itertools.islice(
+            itertools.cycle(self.vertex_indices),
+            0,
+            len(self.vertex_indices) + vertices_num - 1,
+        ))
+        return zip(*(itertools.islice(vertex_indices_cycle,
+                                      offset,
+                                      len(self.vertex_indices) + offset)
+                     for offset in range(vertices_num)))
+
 
 class _LineSegment(_PolygonalCircuit):
 
