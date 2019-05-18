@@ -1,6 +1,6 @@
 import pytest
 
-from freesurfer_surface import PolygonalCircuit
+from freesurfer_surface import PolygonalCircuit, Vertex
 
 
 def test_init_tuple():
