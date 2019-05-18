@@ -98,8 +98,13 @@ class Vertex(numpy.ndarray):
     def __repr__(self) -> str:
         return '{}({})'.format(type(self).__name__, self.__format_coords())
 
-    def distance_mm(self, other: 'Vertex') -> float:
-        return numpy.linalg.norm(self - other)
+    def distance_mm(self, others: typing.Union['Vertex',
+                                               typing.Iterable['Vertex'],
+                                               numpy.ndarray],
+                    ) -> numpy.ndarray:
+        if isinstance(others, Vertex):
+            others = others.reshape((1, 3))
+        return numpy.linalg.norm(self - others, axis=1)
 
 
 class PolygonalCircuit:
