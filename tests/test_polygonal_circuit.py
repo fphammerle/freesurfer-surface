@@ -3,6 +3,21 @@ import pytest
 from freesurfer_surface import _PolygonalCircuit
 
 
+def test_init_tuple():
+    circuit = _PolygonalCircuit((1, 2, 3, 5))
+    assert circuit.vertex_indices == (1, 2, 3, 5)
+
+
+def test_init_list():
+    circuit = _PolygonalCircuit([1, 2, 3, 5])
+    assert circuit.vertex_indices == (1, 2, 3, 5)
+
+
+def test_init_iterator():
+    circuit = _PolygonalCircuit(iter([1, 2, 3, 5]))
+    assert circuit.vertex_indices == (1, 2, 3, 5)
+
+
 @pytest.mark.parametrize(('source_vertex_indices', 'expected_vertex_indices'), [
     ((1,), (1,)),
     ((1, 2), (1, 2)),
