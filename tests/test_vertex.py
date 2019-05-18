@@ -39,3 +39,18 @@ def test_vars():
     assert attrs['right'] == pytest.approx(-1.5)
     assert attrs['anterior'] == pytest.approx(4)
     assert attrs['superior'] == pytest.approx(2)
+
+
+@pytest.mark.parametrize(('vertex_a', 'vertex_b', 'expected_distance_mm'), [
+    (Vertex(0, 0, 0), Vertex(0, 0, 0), 0),
+    (Vertex(0, 0, 0), Vertex(1, 0, 0), 1),
+    (Vertex(0, 0, 0), Vertex(0, 1, 0), 1),
+    (Vertex(0, 0, 0), Vertex(0, 0, 1), 1),
+    (Vertex(0, 0, 0), Vertex(1, 1, 0), 2**(1/2)),
+    (Vertex(0, 0, 0), Vertex(1, 1, 1), 3**(1/2)),
+    (Vertex(1, 2, 3), Vertex(2, 3, 4), 3**(1/2)),
+    (Vertex(1, 2, 3), Vertex(5, 8, -1), (16+36+16)**(1/2)),
+])
+def test_distance(vertex_a, vertex_b, expected_distance_mm):
+    assert vertex_a.distance_mm(vertex_b) \
+        == pytest.approx(expected_distance_mm)
