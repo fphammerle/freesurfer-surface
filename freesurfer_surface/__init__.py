@@ -437,6 +437,30 @@ class Surface:
                 counts[vertex_index_pair[1]][vertex_index_pair[0]] += 1
         return counts
 
+    def find_borders(self) -> typing.Iterator[_PolygonalCircuit]:
+        border_neighbours = {}
+        for vertex_index, neighbour_counts \
+                in self._triangle_count_by_adjacent_vertex_indices().items():
+            if not neighbour_counts:
+                yield _PolygonalCircuit((vertex_index,))
+            else:
+                neighbours = [neighbour_index for neighbour_index, counts
+                              in neighbour_counts.items()
+                              if counts != 2]
+                if neighbours:
+                    assert len(neighbours) == 2, (vertex_index, neighbours)
+                    border_neighbours[vertex_index] = neighbours
+        while border_neighbours:
+            vertex_index, neighbour_indices = border_neighbours.popitem()
+            cycle_indices = [vertex_index]
+            vertex_index = neighbour_indices[0]
+            while vertex_index != cycle_indices[0]:
+                neighbour_indices = border_neighbours.pop(vertex_index)
+                neighbour_indices.remove(cycle_indices[-1])
+                cycle_indices.append(vertex_index)
+                vertex_index, = neighbour_indices
+            yield _PolygonalCircuit(cycle_indices)
+
     def _get_vertex_label_index(self, vertex_index: int) -> typing.Optional[int]:
         return self.annotation.vertex_label_index.get(vertex_index, None)
 
