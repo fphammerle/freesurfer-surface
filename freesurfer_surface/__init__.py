@@ -418,6 +418,16 @@ class Surface:
         self.triangles.append(Triangle(vertex_indices[2:]
                                        + vertex_indices[:1]))
 
+    def _triangle_count_by_adjacent_vertex_indices(self) \
+            -> typing.Dict[int, typing.Dict[int, int]]:
+        counts = {vertex_index: collections.defaultdict(lambda: 0)
+                  for vertex_index in range(len(self.vertices))}
+        for triangle in self.triangles:
+            for vertex_index_pair in triangle.adjacent_vertex_indices(2):
+                counts[vertex_index_pair[0]][vertex_index_pair[1]] += 1
+                counts[vertex_index_pair[1]][vertex_index_pair[0]] += 1
+        return counts
+
     def _get_vertex_label_index(self, vertex_index: int) -> typing.Optional[int]:
         return self.annotation.vertex_label_index.get(vertex_index, None)
 
