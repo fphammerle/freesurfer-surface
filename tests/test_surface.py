@@ -4,7 +4,7 @@ import numpy
 import pytest
 
 from freesurfer_surface import setlocale, Vertex, Triangle, _LineSegment, \
-                               Annotation, Surface, _PolygonalCircuit
+                               Annotation, Surface
 
 from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
 
