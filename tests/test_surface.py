@@ -522,3 +522,18 @@ def test__triangles_vertex_indices():
     surface.triangles.append(Triangle((5, 1, 4)))
     assert (surface._triangles_vertex_indices()
             == [[0, 1, 2], [3, 1, 2], [3, 1, 4], [5, 1, 4]]).all()
+
+
+def test__triangles_vertex_coords():
+    surface = Surface()
+    for i in range(6):
+        surface.add_vertex(Vertex(i, i, i))
+    surface.triangles.append(Triangle((0, 1, 2)))
+    surface.triangles.append(Triangle((3, 1, 2)))
+    surface.triangles.append(Triangle((3, 1, 4)))
+    surface.triangles.append(Triangle((5, 1, 4)))
+    assert (surface._triangles_vertex_coords()
+            == [[[0, 0, 0], [1, 1, 1], [2, 2, 2]],
+                [[3, 3, 3], [1, 1, 1], [2, 2, 2]],
+                [[3, 3, 3], [1, 1, 1], [4, 4, 4]],
+                [[5, 5, 5], [1, 1, 1], [4, 4, 4]]]).all()
