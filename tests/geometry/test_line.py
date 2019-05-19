@@ -57,3 +57,8 @@ def test_init_numpy_array():
 ])
 def test__equal(line_a, line_b, equal):
     assert (line_a == line_b) == equal
+
+
+def test_repr():
+    line = _Line(point=[1, 2, 3], vector=[4, 5, 6])
+    assert repr(line) == 'line(t) = [1. 2. 3.] + [4. 5. 6.] t'
