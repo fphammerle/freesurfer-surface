@@ -519,3 +519,15 @@ class Surface:
         return numpy.take(self.vertices,
                           indices=self._triangles_vertex_indices(),
                           axis=0)
+
+    def _triangles_point_normal(self) -> typing.Tuple[numpy.ndarray,
+                                                      numpy.ndarray]:
+        vertex_coords = self._triangles_vertex_coords().transpose(1, 0, 2)
+        normal_vector = numpy.cross(
+            vertex_coords[1] - vertex_coords[0],
+            vertex_coords[2] - vertex_coords[0],
+            axis=1,
+        )
+        # https://stackoverflow.com/a/39657770/5894777
+        constant = numpy.einsum('np,np->n', normal_vector, vertex_coords[0])
+        return normal_vector, constant

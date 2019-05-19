@@ -537,3 +537,42 @@ def test__triangles_vertex_coords():
                 [[3, 3, 3], [1, 1, 1], [2, 2, 2]],
                 [[3, 3, 3], [1, 1, 1], [4, 4, 4]],
                 [[5, 5, 5], [1, 1, 1], [4, 4, 4]]]).all()
+    assert (surface._triangles_vertex_coords().transpose(1, 0, 2)
+            == [[[0, 0, 0], [3, 3, 3], [3, 3, 3], [5, 5, 5]],
+                [[1, 1, 1], [1, 1, 1], [1, 1, 1], [1, 1, 1]],
+                [[2, 2, 2], [2, 2, 2], [4, 4, 4], [4, 4, 4]]]).all()
+
+
+def test__triangles_point_normal():
+    surface = Surface()
+    surface.add_vertex(Vertex(0, 0, 0))
+    surface.add_vertex(Vertex(2, 0, 0))
+    surface.add_vertex(Vertex(0, 2, 0))
+    surface.add_vertex(Vertex(0, 0, 2))
+    surface.add_vertex(Vertex(0, 1, 3))
+    surface.triangles.append(Triangle((0, 1, 2)))
+    surface.triangles.append(Triangle((0, 1, 3)))
+    surface.triangles.append(Triangle((2, 1, 3)))
+    surface.triangles.append(Triangle((0, 3, 4)))
+    surface.triangles.append(Triangle((0, 1, 4)))
+    surface.triangles.append(Triangle((1, 4, 0)))
+    surface.triangles.append(Triangle((4, 0, 1)))
+    surface.triangles.append(Triangle((4, 1, 0)))
+    surface.triangles.append(Triangle((4, 1, 2)))
+    normal_vectors, constants = surface._triangles_point_normal()
+    assert (normal_vectors == [[0, 0, 4],
+                               [0, -4, 0],
+                               [-4, -4, -4],
+                               [-2, 0, 0],
+                               [0, -6, 2],
+                               [0, -6, 2],
+                               [0, -6, 2],
+                               [0, 6, -2],
+                               [6, 6, 2]]).all()
+    assert (constants == [0, 0, -8, 0, 0, 0, 0, 0, 12]).all()
+    for triangle, normal_vector, constant \
+            in zip(surface.triangles, normal_vectors, constants):
+        vertices = [surface.vertices[i] for i in triangle.vertex_indices]
+        for vertex in vertices:
+            assert numpy.inner(normal_vector, vertex) \
+                == pytest.approx(constant)
