@@ -116,8 +116,7 @@ class _PolygonalCircuit:
         self._vertex_indices = tuple(indices)
 
     def _normalize(self) -> '_PolygonalCircuit':
-        min_vertex_index_index = self.vertex_indices.index(
-            min(self.vertex_indices))
+        min_vertex_index_index = numpy.argmin(self.vertex_indices)
         previous_index = self.vertex_indices[min_vertex_index_index - 1]
         next_index = self.vertex_indices[(min_vertex_index_index+1)
                                          % len(self.vertex_indices)]
