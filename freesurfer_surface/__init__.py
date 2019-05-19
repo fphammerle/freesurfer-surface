@@ -508,6 +508,4 @@ class Surface:
 
     def select_vertices(self, vertex_indices: typing.Iterable[int]) \
             -> numpy.ndarray:
-        if not hasattr(vertex_indices, '__getitem__'):
-            vertex_indices = list(vertex_indices)
-        return numpy.take(self.vertices, indices=vertex_indices, axis=0)
+        return [self.vertices[idx] for idx in vertex_indices]
