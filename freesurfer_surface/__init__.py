@@ -116,16 +116,11 @@ class _PolygonalCircuit:
         self._vertex_indices = tuple(indices)
 
     def _normalize(self) -> '_PolygonalCircuit':
-        min_vertex_index_index = numpy.argmin(self.vertex_indices)
-        previous_index = self.vertex_indices[min_vertex_index_index - 1]
-        next_index = self.vertex_indices[(min_vertex_index_index+1)
-                                         % len(self.vertex_indices)]
-        if previous_index < next_index:
-            vertex_indices = self.vertex_indices[:min_vertex_index_index+1][::-1] \
-                             + self.vertex_indices[min_vertex_index_index+1:][::-1]
-        else:
-            vertex_indices = self.vertex_indices[min_vertex_index_index:] \
-                              + self.vertex_indices[:min_vertex_index_index]
+        vertex_indices = collections.deque(self.vertex_indices)
+        vertex_indices.rotate(-numpy.argmin(self.vertex_indices))
+        if len(vertex_indices) > 2 and vertex_indices[-1] < vertex_indices[1]:
+            vertex_indices.reverse()
+            vertex_indices.rotate(1)
         return type(self)(vertex_indices)
 
     def __eq__(self, other: '_PolygonalCircuit') -> bool:
