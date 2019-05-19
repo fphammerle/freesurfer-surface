@@ -175,7 +175,8 @@ class PolygonalChainsNotOverlapingError(ValueError):
 class PolygonalChain:
 
     def __init__(self, vertex_indices: typing.Iterable[int]):
-        self.vertex_indices = collections.deque(vertex_indices) # type: Deque[int]
+        self.vertex_indices \
+            = collections.deque(vertex_indices)  # type: Deque[int]
 
     def __eq__(self, other: 'PolygonalChain') -> bool:
         return self.vertex_indices == other.vertex_indices
@@ -504,3 +505,9 @@ class Surface:
             self.triangles[triangle_index] \
                 = Triangle(map(lambda i: i + int(vertex_index_conversion[i]),
                                self.triangles[triangle_index].vertex_indices))
+
+    def select_vertices(self, vertex_indices: typing.Iterable[int]) \
+            -> numpy.ndarray:
+        if not hasattr(vertex_indices, '__getitem__'):
+            vertex_indices = list(vertex_indices)
+        return numpy.take(self.vertices, indices=vertex_indices, axis=0)
