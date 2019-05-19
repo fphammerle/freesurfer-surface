@@ -24,7 +24,7 @@ class _Line:
     def __repr__(self) -> str:
         return 'line(t) = {} + {} t'.format(self.point, self.vector)
 
-    def _intersect_line(self, other: '_Line') \
+    def intersect_line(self, other: '_Line') \
             -> typing.Union[numpy.ndarray, bool]:
         # https://en.wikipedia.org/wiki/Skew_lines#Distance
         lines_normal_vector = numpy.cross(self.vector, other.vector)
@@ -48,3 +48,24 @@ def _intersect_planes(normal_vector_a: numpy.ndarray,
         numpy.vstack((constant_a, constant_b, 0)),
     )
     return _Line(point=point.reshape(3), vector=line_vector)
+
+
+def _between(lower_limit: numpy.ndarray,
+             point: numpy.ndarray,
+             upper_limit: numpy.ndarray) -> bool:
+    return (lower_limit <= point).all() and (point <= upper_limit).all()
+
+
+def _intersect_line_segments(points_a: numpy.ndarray,
+                             points_b: numpy.ndarray) \
+        -> typing.Union[numpy.ndarray, bool]:
+    lines = [_Line(points[0], points[1] - points[0])
+             for points in [points_a, points_b]]
+    point = lines[0].intersect_line(lines[1])
+    if isinstance(point, bool):
+        return point
+    for points in [points_a, points_b]:
+        if not _between(points[0], point, points[1]) \
+            and not _between(points[1], point, points[0]):
+            return False
+    return point

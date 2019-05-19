@@ -105,9 +105,9 @@ def test_repr():
      _Line(point=(5, 10, 10), vector=(8, 16, 14)),
      False),
 ])
-def test__intersect_line(line_a, line_b, expected_point):
+def test_intersect_line(line_a, line_b, expected_point):
     # pylint: disable=protected-access
-    point = line_a._intersect_line(line_b)
+    point = line_a.intersect_line(line_b)
     if isinstance(expected_point, bool):
         assert isinstance(point, bool)
         assert point == expected_point
