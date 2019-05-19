@@ -507,5 +507,5 @@ class Surface:
                                self.triangles[triangle_index].vertex_indices))
 
     def select_vertices(self, vertex_indices: typing.Iterable[int]) \
-            -> numpy.ndarray:
+            -> typing.List[Vertex]:
         return [self.vertices[idx] for idx in vertex_indices]

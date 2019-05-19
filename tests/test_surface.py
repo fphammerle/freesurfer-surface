@@ -516,11 +516,12 @@ def test_select_vertices():
     surface = Surface()
     for i in range(4):
         surface.add_vertex(Vertex(i, i, i))
-    assert (surface.select_vertices([2, 1])
-            == [surface.vertices[2], surface.vertices[1]]).all()
-    assert (surface.select_vertices((3, 2))
-            == [surface.vertices[3], surface.vertices[2]]).all()
-    assert (surface.select_vertices((3, 2))
-            == [[3, 3, 3], [2, 2, 2]]).all()
-    assert (surface.select_vertices(filter(lambda i: i % 2 == 1, range(4)))
-            == [[1, 1, 1], [3, 3, 3]]).all()
+    assert numpy.allclose(surface.select_vertices([2, 1]),
+                          [surface.vertices[2], surface.vertices[1]])
+    assert numpy.allclose(surface.select_vertices([3, 2]),
+                          [surface.vertices[3], surface.vertices[2]])
+    assert numpy.allclose(surface.select_vertices((3, 2)),
+                          [[3, 3, 3], [2, 2, 2]])
+    assert numpy.allclose(surface.select_vertices(filter(lambda i: i % 2 == 1,
+                                                         range(4))),
+                          [[1, 1, 1], [3, 3, 3]])
