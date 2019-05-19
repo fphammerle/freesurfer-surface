@@ -5,8 +5,7 @@ import numpy
 
 def _collinear(vector_a: numpy.ndarray, vector_b: numpy.ndarray) -> bool:
     # null vector: https://math.stackexchange.com/a/1772580
-    return numpy.allclose(numpy.cross(vector_a, vector_b),
-                          numpy.zeros(len(vector_a)))
+    return numpy.allclose(numpy.cross(vector_a, vector_b), 0)
 
 
 class _Line:
@@ -24,6 +23,17 @@ class _Line:
 
     def __repr__(self) -> str:
         return 'line(t) = {} + {} t'.format(self.point, self.vector)
+
+    def _intersect_line(self, other: '_Line') \
+            -> typing.Union[numpy.ndarray, bool]:
+        # https://en.wikipedia.org/wiki/Skew_lines#Distance
+        lines_normal_vector = numpy.cross(self.vector, other.vector)
+        if numpy.allclose(lines_normal_vector, 0):
+            return _collinear(self.vector, self.point - other.point)
+        plane_normal_vector = numpy.cross(other.vector, lines_normal_vector)
+        return self.point + self.vector \
+            * (numpy.inner(other.point - self.point, plane_normal_vector)
+               / numpy.inner(self.vector, plane_normal_vector))
 
 
 def _intersect_planes(normal_vector_a: numpy.ndarray,

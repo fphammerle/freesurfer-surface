@@ -62,3 +62,54 @@ def test__equal(line_a, line_b, equal):
 def test_repr():
     line = _Line(point=[1, 2, 3], vector=[4, 5, 6])
     assert repr(line) == 'line(t) = [1. 2. 3.] + [4. 5. 6.] t'
+
+
+@pytest.mark.parametrize(('line_a', 'line_b', 'expected_point'), [
+    (_Line(point=(1, 2, 3), vector=(0, 0, 4)),
+     _Line(point=(1, 2, 3), vector=(0, 5, 0)),
+     [1, 2, 3]),
+    (_Line(point=(1, 2, 7), vector=(0, 0, 4)),
+     _Line(point=(1, -8, 3), vector=(0, 5, 0)),
+     [1, 2, 3]),
+    (_Line(point=(1, 2, 3), vector=(3, 2, 4)),
+     _Line(point=(1, 2, 3), vector=(4, -5, 9)),
+     [1, 2, 3]),
+    (_Line(point=(-2, 0, -1), vector=(3, 2, 4)),
+     _Line(point=(1, 2, 3), vector=(4, -5, 9)),
+     [1, 2, 3]),
+    (_Line(point=(-2, 0, -1), vector=(3, 2, 4)),
+     _Line(point=(9, -8, 21), vector=(4, -5, 9)),
+     [1, 2, 3]),
+    (_Line(point=(-7, 4, -2), vector=(2, 6, 3)),
+     _Line(point=(-7, 4, -2), vector=(-4, 8, -3)),
+     [-7, 4, -2]),
+    (_Line(point=(-5, 10, 1), vector=(2, 6, 3)),
+     _Line(point=(-15, 20, -8), vector=(-4, 8, -3)),
+     [-7, 4, -2]),
+    (_Line(point=(1, 2, 3), vector=(4, 8, 7)),
+     _Line(point=(1, 2, 3), vector=(4, 8, 7)),
+     True),
+    (_Line(point=(1, 2, 3), vector=(4, 8, 7)),
+     _Line(point=(1, 2, 3), vector=(8, 16, 14)),
+     True),
+    (_Line(point=(1, 2, 3), vector=(-4, -8, -7)),
+     _Line(point=(1, 2, 3), vector=(8, 16, 14)),
+     True),
+    (_Line(point=(-3, -6, -4), vector=(-4, -8, -7)),
+     _Line(point=(1, 2, 3), vector=(8, 16, 14)),
+     True),
+    (_Line(point=(-3, -6, -4), vector=(-4, -8, -7)),
+     _Line(point=(5, 10, 10), vector=(8, 16, 14)),
+     True),
+    (_Line(point=(-3, -6, -3), vector=(-4, -8, -7)),
+     _Line(point=(5, 10, 10), vector=(8, 16, 14)),
+     False),
+])
+def test__intersect_line(line_a, line_b, expected_point):
+    # pylint: disable=protected-access
+    point = line_a._intersect_line(line_b)
+    if isinstance(expected_point, bool):
+        assert isinstance(point, bool)
+        assert point == expected_point
+    else:
+        assert numpy.allclose(point, expected_point)
