@@ -44,6 +44,7 @@ setuptools.setup(
     entry_points={
         'console_scripts': [
             'freesurfer-annotation-labels = freesurfer_surface.__main__:annotation_labels',
+            'unite-freesurfer-surfaces = freesurfer_surface.__main__:unite_surfaces',
         ],
     },
     python_requires='>=3.5',
