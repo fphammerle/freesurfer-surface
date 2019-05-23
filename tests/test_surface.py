@@ -333,12 +333,33 @@ def test_find_borders_remove_adjacent_triangles():
     borders = set(surface.find_borders())
     assert len(borders) == 2
     assert triangles[0] in borders
-    assert PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
+    assert PolygonalCircuit((137076, 136141, 135263,
+                             135264, 136142)) in borders
     surface.triangles.pop(274320)
     borders = set(surface.find_borders())
     assert len(borders) == 2
     assert PolygonalCircuit((136143, 138007, 138008, 137078)) in borders
-    assert PolygonalCircuit((137076, 136141, 135263, 135264, 136142)) in borders
+    assert PolygonalCircuit((137076, 136141, 135263,
+                             135264, 136142)) in borders
+
+
+@pytest.mark.parametrize(('label_name', 'border_lens'), [
+    ('precentral', [416]),
+    ('postcentral', [395]),
+])
+def test_find_borders_real(label_name, border_lens):
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    surface.load_annotation_file(ANNOTATION_FILE_PATH)
+    label, = filter(lambda l: l.name == label_name,
+                    surface.annotation.labels.values())
+    surface.triangles = list(filter(
+        lambda t: all(surface.annotation.vertex_label_index[vertex_idx]
+                      == label.index for vertex_idx in t.vertex_indices),
+        surface.triangles,
+    ))
+    surface.remove_unused_vertices()
+    borders = list(surface.find_borders())
+    assert sorted(len(b.vertex_indices) for b in borders) == border_lens
 
 
 def test__get_vertex_label_index():
