@@ -38,6 +38,7 @@ Find Border of Labelled Region
 
 import collections
 import contextlib
+import copy
 import datetime
 import itertools
 import locale
@@ -518,3 +519,16 @@ class Surface:
     def select_vertices(self, vertex_indices: typing.Iterable[int]) \
             -> typing.List[Vertex]:
         return [self.vertices[idx] for idx in vertex_indices]
+
+    @staticmethod
+    def unite(surfaces: typing.Iterable['Surface']) -> 'Surface':
+        surfaces_iter = iter(surfaces)
+        union = copy.deepcopy(next(surfaces_iter))
+        for surface in surfaces_iter:
+            vertex_index_offset = len(union.vertices)
+            union.vertices.extend(surface.vertices)
+            union.triangles.extend(
+                Triangle(vertex_idx + vertex_index_offset
+                         for vertex_idx in triangle.vertex_indices)
+                for triangle in surface.triangles)
+        return union

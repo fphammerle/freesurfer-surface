@@ -1,3 +1,4 @@
+import copy
 import datetime
 
 import numpy
@@ -434,7 +435,8 @@ def test_find_label_border_polygonal_chains():
     surface.load_annotation_file(ANNOTATION_FILE_PATH)
     precentral_label, = filter(lambda l: l.name == 'precentral',
                                surface.annotation.labels.values())
-    border_chain, = surface.find_label_border_polygonal_chains(precentral_label)
+    border_chain, = surface.find_label_border_polygonal_chains(
+        precentral_label)
     vertex_indices = list(border_chain.vertex_indices)
     assert len(vertex_indices) == 418
     min_index = vertex_indices.index(min(vertex_indices))
@@ -558,3 +560,66 @@ def test_select_vertices():
     assert numpy.allclose(surface.select_vertices(filter(lambda i: i % 2 == 1,
                                                          range(4))),
                           [[1, 1, 1], [3, 3, 3]])
+
+
+def test_unite_2():
+    surface_a = Surface()
+    for i in range(0, 4):
+        surface_a.add_vertex(Vertex(i, i, i))
+    surface_a.triangles.append(Triangle((0, 1, 2)))
+    surface_a.triangles.append(Triangle((1, 2, 3)))
+    surface_b = Surface()
+    for i in range(10, 14):
+        surface_b.add_vertex(Vertex(i, i, i))
+    surface_b.triangles.append(Triangle((0, 1, 3)))
+    surface_a_copy = copy.deepcopy(surface_a)
+    surface_b_copy = copy.deepcopy(surface_b)
+    union = Surface.unite([surface_a, surface_b])
+    assert numpy.allclose(surface_a.vertices, surface_a_copy.vertices)
+    assert numpy.allclose(surface_b.vertices, surface_b_copy.vertices)
+    assert numpy.allclose(union.vertices[:4], surface_a.vertices)
+    assert numpy.allclose(union.vertices[4:], surface_b.vertices)
+    assert surface_a.triangles == surface_a_copy.triangles
+    assert surface_b.triangles == surface_b_copy.triangles
+    assert union.triangles[:2] == surface_a.triangles
+    assert union.triangles[2:] == [Triangle((4, 5, 7))]
+
+
+def test_unite_3():
+    surface_a = Surface()
+    for i in range(0, 4):
+        surface_a.add_vertex(Vertex(i, i, i))
+    surface_a.triangles.append(Triangle((0, 1, 2)))
+    surface_a.triangles.append(Triangle((1, 2, 3)))
+    surface_b = Surface()
+    for i in range(10, 14):
+        surface_b.add_vertex(Vertex(i, i, i))
+    surface_b.triangles.append(Triangle((0, 1, 3)))
+    surface_c = Surface()
+    for i in range(20, 23):
+        surface_c.add_vertex(Vertex(i, i, i))
+    surface_c.triangles.append(Triangle((0, 1, 2)))
+    surface_c.triangles.append(Triangle((0, 1, 2)))
+    union = Surface.unite(filter(None, [surface_a, surface_b, surface_c]))
+    assert numpy.allclose(union.vertices[:4], surface_a.vertices)
+    assert numpy.allclose(union.vertices[4:8], surface_b.vertices)
+    assert numpy.allclose(union.vertices[8:], surface_c.vertices)
+    assert union.triangles[:2] == surface_a.triangles
+    assert union.triangles[2:3] == [Triangle((4, 5, 7))]
+    assert union.triangles[3:] == [Triangle((8, 9, 10)), Triangle((8, 9, 10))]
+
+
+def test_unite_real():
+    surface_a = Surface.read_triangular(SURFACE_FILE_PATH)
+    surface_b = Surface()
+    for i in range(5):
+        surface_b.add_vertex(Vertex(i, i, i))
+    surface_b.triangles.append(Triangle((0, 1, 3)))
+    surface_b.triangles.append(Triangle((1, 3, 4)))
+    union = Surface.unite((surface_a, surface_b))
+    assert numpy.allclose(union.vertices[:-5], surface_a.vertices)
+    assert numpy.allclose(union.vertices[-5:], surface_b.vertices)
+    assert union.triangles[:-2] == surface_a.triangles
+    assert union.triangles[-2:] == [
+        Triangle((155622, 155623, 155625)),
+        Triangle((155623, 155625, 155626))]
