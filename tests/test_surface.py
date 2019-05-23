@@ -346,6 +346,14 @@ def test_find_borders_remove_adjacent_triangles():
 @pytest.mark.parametrize(('label_name', 'border_lens'), [
     ('precentral', [416]),
     ('postcentral', [395]),
+    ('medialorbitofrontal', [6, 246]),
+    # ...--2343      2347
+    #          \    /    \
+    #           2345      2348
+    #          /    \    /
+    # ...--2344      2346
+    ('posteriorcingulate', [194]),
+    ('unknown', [3, 390]),
 ])
 def test_find_borders_real(label_name, border_lens):
     surface = Surface.read_triangular(SURFACE_FILE_PATH)

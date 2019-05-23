@@ -441,17 +441,26 @@ class Surface:
                               in neighbour_counts.items()
                               if counts != 2]
                 if neighbours:
-                    assert len(neighbours) == 2, (vertex_index, neighbours)
+                    assert len(neighbours) % 2 == 0, \
+                        (vertex_index, neighbour_counts)
                     border_neighbours[vertex_index] = neighbours
         while border_neighbours:
             vertex_index, neighbour_indices = border_neighbours.popitem()
             cycle_indices = [vertex_index]
+            border_neighbours[vertex_index] = neighbour_indices[1:]
             vertex_index = neighbour_indices[0]
             while vertex_index != cycle_indices[0]:
                 neighbour_indices = border_neighbours.pop(vertex_index)
                 neighbour_indices.remove(cycle_indices[-1])
                 cycle_indices.append(vertex_index)
-                vertex_index, = neighbour_indices
+                if len(neighbour_indices) > 1:
+                    border_neighbours[vertex_index] = neighbour_indices[1:]
+                vertex_index = neighbour_indices[0]
+            assert vertex_index in border_neighbours, \
+                (vertex_index, cycle_indices, border_neighbours)
+            final_neighbour_indices = border_neighbours.pop(vertex_index)
+            assert final_neighbour_indices == [cycle_indices[-1]], \
+                (vertex_index, final_neighbour_indices, cycle_indices)
             yield PolygonalCircuit(cycle_indices)
 
     def _get_vertex_label_index(self, vertex_index: int) -> typing.Optional[int]:
