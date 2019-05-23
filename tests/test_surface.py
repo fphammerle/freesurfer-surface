@@ -623,3 +623,9 @@ def test_unite_real():
     assert union.triangles[-2:] == [
         Triangle((155622, 155623, 155625)),
         Triangle((155623, 155625, 155626))]
+    assert union.creator == surface_a.creator
+    assert union.creation_datetime == surface_a.creation_datetime
+    assert union.using_old_real_ras == surface_a.using_old_real_ras
+    assert union.volume_geometry_info == surface_a.volume_geometry_info
+    assert union.command_lines == surface_a.command_lines
+    assert union.annotation == surface_a.annotation
