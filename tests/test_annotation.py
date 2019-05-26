@@ -1,6 +1,5 @@
-from freesurfer_surface import Annotation
-
 from conftest import ANNOTATION_FILE_PATH
+from freesurfer_surface import Annotation
 
 
 def test_load_annotation():

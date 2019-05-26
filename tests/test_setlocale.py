@@ -2,7 +2,7 @@ import locale
 
 import pytest
 
-from freesurfer_surface import setlocale, UnsupportedLocaleSettingError
+from freesurfer_surface import UnsupportedLocaleSettingError, setlocale
 
 
 def test_set():

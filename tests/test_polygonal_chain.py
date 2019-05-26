@@ -1,6 +1,7 @@
 import pytest
 
-from freesurfer_surface import PolygonalChain, PolygonalChainsNotOverlapingError, LineSegment
+from freesurfer_surface import (LineSegment, PolygonalChain,
+                                PolygonalChainsNotOverlapingError)
 
 
 def test_init():

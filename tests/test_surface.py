@@ -4,10 +4,9 @@ import datetime
 import numpy
 import pytest
 
-from freesurfer_surface import setlocale, Vertex, Triangle, LineSegment, \
-                               Annotation, Surface, PolygonalCircuit
-
 from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
+from freesurfer_surface import (Annotation, LineSegment, PolygonalCircuit,
+                                Surface, Triangle, Vertex, setlocale)
 
 # pylint: disable=protected-access
 

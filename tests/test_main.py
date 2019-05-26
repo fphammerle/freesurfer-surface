@@ -6,10 +6,9 @@ import unittest.mock
 
 import numpy
 
+from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
 from freesurfer_surface import Surface, Triangle, Vertex
 from freesurfer_surface.__main__ import annotation_labels, unite_surfaces
-
-from conftest import ANNOTATION_FILE_PATH, SURFACE_FILE_PATH
 
 
 def check_rows(csv_rows: typing.List[str]):
