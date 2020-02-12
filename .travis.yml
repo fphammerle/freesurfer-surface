@@ -4,7 +4,6 @@ python:
 - 3.5
 - 3.6
 - 3.7
-- 3.8
 
 # required for python >= 3.7
 dist: xenial
