@@ -434,8 +434,10 @@ def test_find_label_border_polygonal_chains():
     surface.load_annotation_file(ANNOTATION_FILE_PATH)
     precentral_label, = filter(lambda l: l.name == 'precentral',
                                surface.annotation.labels.values())
-    border_chain, = surface.find_label_border_polygonal_chains(
-        precentral_label)
+    border_chains = list(surface.find_label_border_polygonal_chains(
+        precentral_label))
+    assert len(border_chains) == 1, border_chains
+    border_chain, = border_chains
     vertex_indices = list(border_chain.vertex_indices)
     assert len(vertex_indices) == 418
     min_index = vertex_indices.index(min(vertex_indices))
