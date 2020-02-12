@@ -12,6 +12,8 @@ pytest = "<5"
 pytest-cov = "<3,>=2"
 "autopep8" = "<2"
 isort = "<5"
+# >=1.4.0 python3.8
+typed-ast = ">=1.4.0"
 
 [requires]
 python_version = "3"
