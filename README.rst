@@ -27,6 +27,21 @@ Install
 Usage
 -----
 
+Read Surface File
+~~~~~~~~~~~~~~~~~
+
+.. code:: python
+
+    from freesurfer_surface import Surface
+    surface = Surface.read_triangular('bert/surf/lh.pial')
+    print('some vertices:', surface.vertices[:3])
+    vertex_0 = surface.vertices[0]
+    print('coordinates of vertex #0:', (vertex_0.right, vertex_0.anterior, vertex_0.superior))
+    print('some triangles:', surface.triangles[:4])
+    triangle_0 = surface.triangles[0]
+    print('vertices of triangle #0:', triangle_0)
+    print('vertex coordinates of triangle #0:', surface.select_vertices(triangle_0.vertex_indices))
+
 Edit Surface File
 ~~~~~~~~~~~~~~~~~
 
