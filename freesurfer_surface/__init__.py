@@ -50,7 +50,7 @@ import numpy
 
 try:
     from freesurfer_surface.version import __version__
-except ModuleNotFoundError:
+except ImportError:  # ModuleNotFoundError not available in python<3.6
     # package is not installed
     __version__ = None
 
