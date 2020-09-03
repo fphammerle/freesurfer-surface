@@ -33,14 +33,21 @@ Read Surface File
 .. code:: python
 
     from freesurfer_surface import Surface
+
     surface = Surface.read_triangular('bert/surf/lh.pial')
-    print('some vertices:', surface.vertices[:3])
+
+    for vertex in surface.vertices[:3]:
+        print(vertex)
+
     vertex_0 = surface.vertices[0]
     print('coordinates of vertex #0:', (vertex_0.right, vertex_0.anterior, vertex_0.superior))
-    print('some triangles:', surface.triangles[:4])
-    triangle_0 = surface.triangles[0]
-    print('vertices of triangle #0:', triangle_0)
-    print('vertex coordinates of triangle #0:', surface.select_vertices(triangle_0.vertex_indices))
+
+    for triangle_index, triangle in enumerate(surface.triangles[:4]):
+        print('\ntriangle #{}:'.format(triangle_index))
+        print('vertex indices:', triangle.vertex_indices)
+        print('vertex coordinates:')
+        for vertex in surface.select_vertices(triangle.vertex_indices):
+            print((vertex.right, vertex.anterior, vertex.superior))
 
 Edit Surface File
 ~~~~~~~~~~~~~~~~~
