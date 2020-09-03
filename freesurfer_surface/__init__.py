@@ -48,7 +48,11 @@ import typing
 
 import numpy
 
-from freesurfer_surface.version import __version__
+try:
+    from freesurfer_surface.version import __version__
+except ModuleNotFoundError:
+    # package is not installed
+    __version__ = None
 
 
 class UnsupportedLocaleSettingError(locale.Error):
