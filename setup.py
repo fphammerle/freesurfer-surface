@@ -10,7 +10,7 @@ setuptools.setup(
     use_scm_version={
         "write_to": os.path.join("freesurfer_surface", "version.py"),
         # `version` triggers pylint C0103
-        "write_to_template": "__version__ = '{version}'\n",
+        "write_to_template": "import typing; __version__: typing.Optional[str] = '{version}'\n",
     },
     description="Python Library to Read and Write Surface Files"
     " in Freesurfer's TriangularSurface Format",
