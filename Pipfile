@@ -14,6 +14,8 @@ pytest-cov = "*"
 
 # python3.5 compatibility
 isort = "<5"
+# https://github.com/numpy/numpy/commit/fbcb58ca2c17217f5dc85cb669ea651b7799b60c#diff-60f61ab7a8d1910d86d9fda2261620314edcae5894d5aaa236b821c7256badd7R30
+numpy = "<1.19"
 # workaround https://github.com/pytest-dev/pytest/issues/3953
 pathlib2 = {version = "*", markers="python_version < '3.6'"}
 # https://github.com/jaraco/zipp/commit/05a3c52b4d41690e0471a2e283cffb500dc0329a
