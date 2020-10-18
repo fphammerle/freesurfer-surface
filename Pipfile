@@ -12,6 +12,7 @@ numpy = "<1.19"
 
 [dev-packages]
 pylint = ">=2.3.0"
+pylint-import-requirements = "*"
 pytest = "*"
 pytest-cov = "*"
 "autopep8" = "<2"
