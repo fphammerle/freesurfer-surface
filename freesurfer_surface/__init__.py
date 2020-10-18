@@ -185,10 +185,15 @@ class PolygonalChainsNotOverlapingError(ValueError):
 
 class PolygonalChain:
     def __init__(self, vertex_indices: typing.Iterable[int]):
-        self.vertex_indices = collections.deque(vertex_indices)  # type: Deque[int]
+        self.vertex_indices = collections.deque(
+            vertex_indices
+        )  # type: typing.Deque[int]
 
-    def __eq__(self, other: "PolygonalChain") -> bool:
-        return self.vertex_indices == other.vertex_indices
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, PolygonalChain)
+            and self.vertex_indices == other.vertex_indices
+        )
 
     def __repr__(self) -> str:
         return "PolygonalChain(vertex_indices={})".format(tuple(self.vertex_indices))
@@ -211,7 +216,7 @@ class PolygonalChain:
 
     def adjacent_vertex_indices(
         self, vertices_num: int = 2
-    ) -> typing.Iterable[typing.Tuple[int]]:
+    ) -> typing.Iterator[typing.Tuple[int, ...]]:
         return zip(
             *(
                 itertools.islice(self.vertex_indices, offset, len(self.vertex_indices))
