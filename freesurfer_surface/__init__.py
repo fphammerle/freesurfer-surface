@@ -106,8 +106,7 @@ class Vertex(numpy.ndarray):
         return "{}({})".format(type(self).__name__, self.__format_coords())
 
     def distance_mm(
-        self,
-        others: typing.Union["Vertex", typing.Iterable["Vertex"], numpy.ndarray],
+        self, others: typing.Union["Vertex", typing.Iterable["Vertex"], numpy.ndarray]
     ) -> numpy.ndarray:
         if isinstance(others, Vertex):
             others = others.reshape((1, 3))
@@ -115,10 +114,7 @@ class Vertex(numpy.ndarray):
 
 
 class PolygonalCircuit:
-
-    _VERTEX_INDICES_TYPE = typing.Tuple[int]
-
-    def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
+    def __init__(self, vertex_indices: typing.Iterable[int]):
         self._vertex_indices = tuple(vertex_indices)
         assert all(isinstance(idx, int) for idx in self._vertex_indices)
 
@@ -163,7 +159,7 @@ class PolygonalCircuit:
 
 
 class LineSegment(PolygonalCircuit):
-    def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
+    def __init__(self, indices: typing.Iterable[int]):
         super().__init__(indices)
         assert len(self.vertex_indices) == 2
 
@@ -172,7 +168,7 @@ class LineSegment(PolygonalCircuit):
 
 
 class Triangle(PolygonalCircuit):
-    def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
+    def __init__(self, indices: typing.Iterable[int]):
         super().__init__(indices)
         assert len(self.vertex_indices) == 3
 
