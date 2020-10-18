@@ -130,9 +130,12 @@ class PolygonalCircuit:
             vertex_indices.rotate(1)
         return type(self)(vertex_indices)
 
-    def __eq__(self, other: "PolygonalCircuit") -> bool:
+    def __eq__(self, other: object) -> bool:
         # pylint: disable=protected-access
-        return self._normalize().vertex_indices == other._normalize().vertex_indices
+        return (
+            isinstance(other, PolygonalCircuit)
+            and self._normalize().vertex_indices == other._normalize().vertex_indices
+        )
 
     def __hash__(self) -> int:
         # pylint: disable=protected-access
