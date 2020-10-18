@@ -89,7 +89,8 @@ class Vertex(numpy.ndarray):
         return self[2]
 
     @property
-    def __dict__(self) -> typing.Dict[str, float]:
+    def __dict__(self) -> typing.Dict[str, typing.Any]:  # type: ignore
+        # type hint: https://github.com/python/mypy/issues/6523#issuecomment-470733447
         return {
             "right": self.right,
             "anterior": self.anterior,
@@ -349,7 +350,7 @@ class Surface:
         self.annotation = None  # type: Optional[Annotation]
 
     @classmethod
-    def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[str]:
+    def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[bytes]:
         while True:
             tag = stream.read(4)
             if not tag:
@@ -363,9 +364,11 @@ class Surface:
 
     def _read_triangular(self, stream: typing.BinaryIO):
         assert stream.read(3) == self._MAGIC_NUMBER
-        self.creator, creation_dt_str = re.match(
+        creation_match = re.match(
             rb"^created by (\w+) on (.* \d{4})\n", stream.readline()
-        ).groups()
+        )
+        assert creation_match
+        self.creator, creation_dt_str = creation_match.groups()
         with setlocale("C"):
             self.creation_datetime = datetime.datetime.strptime(
                 creation_dt_str.decode(), self._DATETIME_FORMAT
@@ -462,9 +465,7 @@ class Surface:
         self.vertices.append(vertex)
         return len(self.vertices) - 1
 
-    def add_rectangle(
-        self, vertex_indices: typing.Iterable[int]
-    ) -> typing.Iterable[int]:
+    def add_rectangle(self, vertex_indices: typing.Iterable[int]) -> None:
         vertex_indices = list(vertex_indices)
         if len(vertex_indices) == 3:
             vertex_indices.append(
@@ -480,8 +481,8 @@ class Surface:
 
     def _triangle_count_by_adjacent_vertex_indices(
         self,
-    ) -> typing.Dict[int, typing.Dict[int, int]]:
-        counts = {
+    ) -> typing.Dict[int, typing.DefaultDict[int, int]]:
+        counts: typing.Dict[int, typing.DefaultDict[int, int]] = {
             vertex_index: collections.defaultdict(lambda: 0)
             for vertex_index in range(len(self.vertices))
         }
@@ -561,7 +562,7 @@ class Surface:
             last_chains_len = None
             while last_chains_len != len(available_chains):
                 last_chains_len = len(available_chains)
-                checked_chains = collections.deque()
+                checked_chains: typing.Deque[PolygonalChain] = collections.deque()
                 while available_chains:
                     potential_neighbour = available_chains.pop()
                     try:
