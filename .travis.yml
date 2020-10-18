@@ -17,6 +17,7 @@ script:
 - pipenv run pytest --cov=freesurfer_surface --cov-report=term-missing --cov-fail-under=100
 - pipenv run pylint --load-plugins=pylint_import_requirements freesurfer_surface
 - pipenv run pylint tests/*
+- pipenv run mypy freesurfer_surface tests
 
 after_success:
 - pip install coveralls
