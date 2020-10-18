@@ -65,8 +65,8 @@ def setlocale(temporary_locale):
     try:
         yield locale.setlocale(locale.LC_ALL, temporary_locale)
     except locale.Error as exc:
-        if str(exc) == 'unsupported locale setting':
-            raise UnsupportedLocaleSettingError(temporary_locale)
+        if str(exc) == "unsupported locale setting":
+            raise UnsupportedLocaleSettingError(temporary_locale) from exc
         raise exc  # pragma: no cover
     finally:
         locale.setlocale(locale.LC_ALL, primary_locale)

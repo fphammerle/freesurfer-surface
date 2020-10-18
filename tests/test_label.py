@@ -4,7 +4,6 @@ from freesurfer_surface import Label
 
 
 @pytest.mark.parametrize(('red', 'green', 'blue', 'transparency', 'color_code'), [
-    # pylint: disable=bad-whitespace
     (220,  20,  20,   0,  1316060),
     ( 60,  20, 220,   0, 14423100),
     ( 75,  50, 125,   0,  8204875),
@@ -23,7 +22,6 @@ def test_color_code_unknown():
 
 
 @pytest.mark.parametrize(('red', 'green', 'blue', 'hex_color_code'), [
-    # pylint: disable=bad-whitespace
     (  0,   0,   0, '#000000'),
     (255, 255, 255, '#ffffff'),
     (255,   0,   0, '#ff0000'),
