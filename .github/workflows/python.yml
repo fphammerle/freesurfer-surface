@@ -30,3 +30,39 @@ jobs:
         PYTHON_VERSION: ${{ matrix.python-version }}
     - run: pipenv graph
     - run: pipenv run black --check .
+  tests:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version:
+        - 3.5
+        - 3.6
+        - 3.7
+      fail-fast: false
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    # test_read_triangular_locale & test_write_triangular_same_locale
+    - run: sudo locale-gen de_AT.utf8
+    - run: pip install --upgrade pipenv==2020.8.13
+    - run: pipenv install --python "$PYTHON_VERSION" --deploy --dev
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
+    - run: pipenv graph
+    - run: pipenv run pytest --cov=freesurfer_surface --cov-report=term-missing --cov-fail-under=100
+    - run: pipenv run pylint --load-plugins=pylint_import_requirements freesurfer_surface
+    # https://github.com/PyCQA/pylint/issues/352
+    - run: pipenv run pylint tests/*
+    - run: pipenv run mypy freesurfer_surface tests
+    # >=1.9.0 to detect branch name
+    # https://github.com/coveralls-clients/coveralls-python/pull/207
+    # https://github.com/coverallsapp/github-action/issues/4#issuecomment-547036866
+    # 1.11.0 https://github.com/coveralls-clients/coveralls-python/issues/219
+    - run: pip install 'coveralls>=1.9.0,<2,!=1.11.0'
+    # https://github.com/coverallsapp/github-action/issues/30
+    # https://github.com/coverallsapp/github-action/issues/4#issuecomment-529399410
+    - run: coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
