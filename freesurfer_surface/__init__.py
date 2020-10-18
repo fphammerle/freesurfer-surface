@@ -482,10 +482,10 @@ class Surface:
     def _triangle_count_by_adjacent_vertex_indices(
         self,
     ) -> typing.Dict[int, typing.DefaultDict[int, int]]:
-        counts: typing.Dict[int, typing.DefaultDict[int, int]] = {
+        counts = {
             vertex_index: collections.defaultdict(lambda: 0)
             for vertex_index in range(len(self.vertices))
-        }
+        }  # type: typing.Dict[int, typing.DefaultDict[int, int]]
         for triangle in self.triangles:
             for vertex_index_pair in triangle.adjacent_vertex_indices(2):
                 counts[vertex_index_pair[0]][vertex_index_pair[1]] += 1
@@ -562,7 +562,9 @@ class Surface:
             last_chains_len = None
             while last_chains_len != len(available_chains):
                 last_chains_len = len(available_chains)
-                checked_chains: typing.Deque[PolygonalChain] = collections.deque()
+                checked_chains = (
+                    collections.deque()
+                )  # type: typing.Deque[PolygonalChain]
                 while available_chains:
                     potential_neighbour = available_chains.pop()
                     try:
