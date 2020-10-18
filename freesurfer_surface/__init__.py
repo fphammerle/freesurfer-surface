@@ -89,7 +89,8 @@ class Vertex(numpy.ndarray):
         return self[2]
 
     @property
-    def __dict__(self) -> typing.Dict[str, float]:
+    def __dict__(self) -> typing.Dict[str, typing.Any]:  # type: ignore
+        # type hint: https://github.com/python/mypy/issues/6523#issuecomment-470733447
         return {
             "right": self.right,
             "anterior": self.anterior,
@@ -106,8 +107,7 @@ class Vertex(numpy.ndarray):
         return "{}({})".format(type(self).__name__, self.__format_coords())
 
     def distance_mm(
-        self,
-        others: typing.Union["Vertex", typing.Iterable["Vertex"], numpy.ndarray],
+        self, others: typing.Union["Vertex", typing.Iterable["Vertex"], numpy.ndarray]
     ) -> numpy.ndarray:
         if isinstance(others, Vertex):
             others = others.reshape((1, 3))
@@ -115,10 +115,7 @@ class Vertex(numpy.ndarray):
 
 
 class PolygonalCircuit:
-
-    _VERTEX_INDICES_TYPE = typing.Tuple[int]
-
-    def __init__(self, vertex_indices: _VERTEX_INDICES_TYPE):
+    def __init__(self, vertex_indices: typing.Iterable[int]):
         self._vertex_indices = tuple(vertex_indices)
         assert all(isinstance(idx, int) for idx in self._vertex_indices)
 
@@ -134,9 +131,12 @@ class PolygonalCircuit:
             vertex_indices.rotate(1)
         return type(self)(vertex_indices)
 
-    def __eq__(self, other: "PolygonalCircuit") -> bool:
+    def __eq__(self, other: object) -> bool:
         # pylint: disable=protected-access
-        return self._normalize().vertex_indices == other._normalize().vertex_indices
+        return (
+            isinstance(other, PolygonalCircuit)
+            and self._normalize().vertex_indices == other._normalize().vertex_indices
+        )
 
     def __hash__(self) -> int:
         # pylint: disable=protected-access
@@ -163,7 +163,7 @@ class PolygonalCircuit:
 
 
 class LineSegment(PolygonalCircuit):
-    def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
+    def __init__(self, indices: typing.Iterable[int]):
         super().__init__(indices)
         assert len(self.vertex_indices) == 2
 
@@ -172,7 +172,7 @@ class LineSegment(PolygonalCircuit):
 
 
 class Triangle(PolygonalCircuit):
-    def __init__(self, indices: PolygonalCircuit._VERTEX_INDICES_TYPE):
+    def __init__(self, indices: typing.Iterable[int]):
         super().__init__(indices)
         assert len(self.vertex_indices) == 3
 
@@ -186,10 +186,15 @@ class PolygonalChainsNotOverlapingError(ValueError):
 
 class PolygonalChain:
     def __init__(self, vertex_indices: typing.Iterable[int]):
-        self.vertex_indices = collections.deque(vertex_indices)  # type: Deque[int]
+        self.vertex_indices = collections.deque(
+            vertex_indices
+        )  # type: typing.Deque[int]
 
-    def __eq__(self, other: "PolygonalChain") -> bool:
-        return self.vertex_indices == other.vertex_indices
+    def __eq__(self, other: object) -> bool:
+        return (
+            isinstance(other, PolygonalChain)
+            and self.vertex_indices == other.vertex_indices
+        )
 
     def __repr__(self) -> str:
         return "PolygonalChain(vertex_indices={})".format(tuple(self.vertex_indices))
@@ -212,7 +217,7 @@ class PolygonalChain:
 
     def adjacent_vertex_indices(
         self, vertices_num: int = 2
-    ) -> typing.Iterable[typing.Tuple[int]]:
+    ) -> typing.Iterator[typing.Tuple[int, ...]]:
         return zip(
             *(
                 itertools.islice(self.vertex_indices, offset, len(self.vertex_indices))
@@ -345,7 +350,7 @@ class Surface:
         self.annotation = None  # type: Optional[Annotation]
 
     @classmethod
-    def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[str]:
+    def _read_cmdlines(cls, stream: typing.BinaryIO) -> typing.Iterator[bytes]:
         while True:
             tag = stream.read(4)
             if not tag:
@@ -359,9 +364,11 @@ class Surface:
 
     def _read_triangular(self, stream: typing.BinaryIO):
         assert stream.read(3) == self._MAGIC_NUMBER
-        self.creator, creation_dt_str = re.match(
+        creation_match = re.match(
             rb"^created by (\w+) on (.* \d{4})\n", stream.readline()
-        ).groups()
+        )
+        assert creation_match
+        self.creator, creation_dt_str = creation_match.groups()
         with setlocale("C"):
             self.creation_datetime = datetime.datetime.strptime(
                 creation_dt_str.decode(), self._DATETIME_FORMAT
@@ -458,9 +465,7 @@ class Surface:
         self.vertices.append(vertex)
         return len(self.vertices) - 1
 
-    def add_rectangle(
-        self, vertex_indices: typing.Iterable[int]
-    ) -> typing.Iterable[int]:
+    def add_rectangle(self, vertex_indices: typing.Iterable[int]) -> None:
         vertex_indices = list(vertex_indices)
         if len(vertex_indices) == 3:
             vertex_indices.append(
@@ -476,11 +481,11 @@ class Surface:
 
     def _triangle_count_by_adjacent_vertex_indices(
         self,
-    ) -> typing.Dict[int, typing.Dict[int, int]]:
+    ) -> typing.Dict[int, typing.DefaultDict[int, int]]:
         counts = {
             vertex_index: collections.defaultdict(lambda: 0)
             for vertex_index in range(len(self.vertices))
-        }
+        }  # type: typing.Dict[int, typing.DefaultDict[int, int]]
         for triangle in self.triangles:
             for vertex_index_pair in triangle.adjacent_vertex_indices(2):
                 counts[vertex_index_pair[0]][vertex_index_pair[1]] += 1
@@ -557,7 +562,9 @@ class Surface:
             last_chains_len = None
             while last_chains_len != len(available_chains):
                 last_chains_len = len(available_chains)
-                checked_chains = collections.deque()
+                checked_chains = (
+                    collections.deque()
+                )  # type: typing.Deque[PolygonalChain]
                 while available_chains:
                     potential_neighbour = available_chains.pop()
                     try:
