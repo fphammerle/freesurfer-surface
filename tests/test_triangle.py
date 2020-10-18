@@ -23,7 +23,7 @@ def test_eq():
 
 
 def test_repr():
-    assert repr(Triangle((0, 1, 2))) == 'Triangle(vertex_indices=(0, 1, 2))'
+    assert repr(Triangle((0, 1, 2))) == "Triangle(vertex_indices=(0, 1, 2))"
 
 
 def test_adjacent_vertex_indices_1():

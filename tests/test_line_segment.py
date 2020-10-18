@@ -15,8 +15,10 @@ def test_eq():
 
 
 def test_repr():
-    assert repr(LineSegment((67018, 67019))) \
-        == 'LineSegment(vertex_indices=(67018, 67019))'
+    assert (
+        repr(LineSegment((67018, 67019)))
+        == "LineSegment(vertex_indices=(67018, 67019))"
+    )
 
 
 def test_adjacent_vertex_indices_1():

@@ -1,6 +1,8 @@
 freesurfer-surface
 ==================
 
+.. image:: https://img.shields.io/badge/code%20style-black-000000.svg
+   :target: https://github.com/psf/black
 .. image:: https://travis-ci.org/fphammerle/freesurfer-surface.svg?branch=master
    :target: https://travis-ci.org/fphammerle/freesurfer-surface
 .. image:: https://coveralls.io/repos/github/fphammerle/freesurfer-surface/badge.svg?branch=master
