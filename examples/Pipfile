@@ -6,7 +6,7 @@ name = "pypi"
 [packages]
 freesurfer-surface = {editable = true, path = "./.."}
 pandas = "<1"
-notebook = "<6"
+notebook = "<7"
 
 [dev-packages]
 
