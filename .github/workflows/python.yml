@@ -66,3 +66,28 @@ jobs:
     - run: coveralls
       env:
         COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+  test-examples:
+    runs-on: ubuntu-18.04
+    strategy:
+      matrix:
+        python-version:
+        - 3.5
+        - 3.6
+        - 3.7
+      fail-fast: false
+    defaults:
+      run:
+        working-directory: examples/
+    steps:
+    - uses: actions/checkout@v1
+    - uses: actions/setup-python@v1
+      with:
+        python-version: ${{ matrix.python-version }}
+    - run: pip install --upgrade pipenv==2020.8.13
+    - run: pipenv install --python "$PYTHON_VERSION" --deploy --dev
+      env:
+        PYTHON_VERSION: ${{ matrix.python-version }}
+    - run: pipenv graph
+    # > the default behaviour is to abort conversion [...] if one of the cells throws an error
+    - run: pipenv run jupyter nbconvert --execute --inplace *.ipynb
+    - run: git diff
