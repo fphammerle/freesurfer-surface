@@ -9,7 +9,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - method `PolygonalCircuit.normalized()`
 
 ### Fixed
-- `PolygonalCircuit.find_label_border_polygonal_chains`:
+- `Surface.find_label_border_polygonal_chains`:
   always include vertices along border with single neighbour
   (previously indeterministic behaviour)
 - `PolygonalCircuit`: fix equals operator for circuits
