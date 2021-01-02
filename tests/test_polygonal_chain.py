@@ -49,6 +49,14 @@ def test_eq():
     assert not PolygonalChain((0, 1, 2)) == PolygonalChain((1, 2, 3, 4))
 
 
+def test_eq_normalized():
+    assert PolygonalChain((0, 1, 2)) == PolygonalChain((0, 2, 1))
+    assert PolygonalChain((1, 0, 2)) == PolygonalChain((0, 2, 1))
+    assert PolygonalChain((1, 0, 2, 4)) == PolygonalChain((0, 1, 4, 2))
+    # pylint: disable=unneeded-not
+    assert not PolygonalChain((1, 0, 2, 4)) == PolygonalChain((0, 1, 2, 4))
+
+
 def test_repr():
     assert repr(PolygonalChain([])) == "PolygonalChain(vertex_indices=())"
     assert repr(PolygonalChain((0, 2, 1))) == "PolygonalChain(vertex_indices=(0, 2, 1))"

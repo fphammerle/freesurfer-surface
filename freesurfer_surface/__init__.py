@@ -199,9 +199,9 @@ class PolygonalChain:
         return PolygonalChain(indices_min_first[0:1] + indices_min_first[-1:0:-1])
 
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, PolygonalChain)
-            and self.vertex_indices == other.vertex_indices
+        return isinstance(other, PolygonalChain) and (
+            self.vertex_indices == other.vertex_indices
+            or self.normalized().vertex_indices == other.normalized().vertex_indices
         )
 
     def __repr__(self) -> str:

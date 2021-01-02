@@ -12,6 +12,8 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `PolygonalCircuit.find_label_border_polygonal_chains`:
   always include vertices along border with single neighbour
   (previously indeterministic behaviour)
+- `PolygonalCircuit`: fix equals operator for circuits
+  with different but equivalent vertex orders
 - type hints
 
 ## [1.1.1] - 2020-10-18
