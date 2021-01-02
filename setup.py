@@ -1,3 +1,20 @@
+# freesurfer-surface - Read and Write Surface Files in Freesurfer’s TriangularSurface Format
+#
+# Copyright (C) 2020 Fabian Peter Hammerle <fabian@hammerle.me>
+#
+# This program is free software: you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation, either version 3 of the License, or
+# any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 import os
 
 import setuptools
@@ -20,7 +37,7 @@ setuptools.setup(
     author="Fabian Peter Hammerle",
     author_email="fabian@hammerle.me",
     url="https://github.com/fphammerle/freesurfer-surface",
-    # TODO add license
+    license="GPLv3+",
     keywords=[
         "brain",
         "freesurfer",
@@ -48,18 +65,10 @@ setuptools.setup(
         "console_scripts": [
             "freesurfer-annotation-labels = freesurfer_surface.__main__:annotation_labels",
             "unite-freesurfer-surfaces = freesurfer_surface.__main__:unite_surfaces",
-        ],
+        ]
     },
     python_requires=">=3.5",
-    install_requires=[
-        "numpy<2",
-    ],
-    setup_requires=[
-        "setuptools_scm",
-    ],
-    tests_require=[
-        "pylint>=2.3.0,<3",
-        "pytest<5",
-        "pytest-cov<3,>=2",
-    ],
+    install_requires=["numpy<2"],
+    setup_requires=["setuptools_scm"],
+    tests_require=["pytest<5"],
 )
