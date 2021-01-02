@@ -1,5 +1,6 @@
 import copy
 import datetime
+import unittest.mock
 
 import numpy
 import pytest
@@ -481,12 +482,37 @@ def test_find_label_border_polygonal_chains():
         lambda l: l.name == "precentral", surface.annotation.labels.values()
     )
     (border_chain,) = surface.find_label_border_polygonal_chains(precentral_label)
-    vertex_indices = list(border_chain.vertex_indices)
-    assert len(vertex_indices) == 418
-    min_index = vertex_indices.index(min(vertex_indices))
-    vertex_indices_normalized = vertex_indices[min_index:] + vertex_indices[:min_index]
+    vertex_indices_normalized = list(border_chain.normalized().vertex_indices)
+    assert len(vertex_indices_normalized) == 418
+    assert vertex_indices_normalized[66:73] == [
+        61044,
+        62119,
+        62118,
+        62107,
+        62118,
+        63255,
+        63264,
+    ]
     assert vertex_indices_normalized[:4] == [32065, 32072, 32073, 32080]
     assert vertex_indices_normalized[-4:] == [36281, 34870, 33454, 33450]
+
+
+def test_find_label_border_polygonal_chains_long_leaf():
+    surface = Surface()
+    with unittest.mock.patch.object(
+        surface,
+        "_find_label_border_segments",
+        return_value=[
+            LineSegment((0, 1)),
+            LineSegment((1, 2)),
+            LineSegment((0, 3)),
+            LineSegment((2, 3)),
+            LineSegment((2, 4)),
+            LineSegment((4, 5)),  # leaf
+        ],
+    ):
+        (border_chain,) = surface.find_label_border_polygonal_chains("dummy")
+    assert list(border_chain.normalized().vertex_indices) == [0, 1, 2, 4, 5, 4, 2, 3]
 
 
 def test__unused_vertices():

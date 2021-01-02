@@ -190,10 +190,18 @@ class PolygonalChain:
             vertex_indices
         )  # type: typing.Deque[int]
 
+    def normalized(self) -> "PolygonalChain":
+        vertex_indices = list(self.vertex_indices)
+        min_index = vertex_indices.index(min(vertex_indices))
+        indices_min_first = vertex_indices[min_index:] + vertex_indices[:min_index]
+        if indices_min_first[1] < indices_min_first[-1]:
+            return PolygonalChain(indices_min_first)
+        return PolygonalChain(indices_min_first[0:1] + indices_min_first[-1:0:-1])
+
     def __eq__(self, other: object) -> bool:
-        return (
-            isinstance(other, PolygonalChain)
-            and self.vertex_indices == other.vertex_indices
+        return isinstance(other, PolygonalChain) and (
+            self.vertex_indices == other.vertex_indices
+            or self.normalized().vertex_indices == other.normalized().vertex_indices
         )
 
     def __repr__(self) -> str:
@@ -548,32 +556,82 @@ class Surface:
             if len(border_vertex_indices) == 2:
                 yield LineSegment(border_vertex_indices)
 
+    _VertexSubindex = typing.Tuple[int, int]
+
+    @classmethod
+    def _duplicate_border(
+        cls,
+        neighbour_indices: typing.DefaultDict[
+            _VertexSubindex, typing.Set[_VertexSubindex]
+        ],
+        previous_index: _VertexSubindex,
+        current_index: _VertexSubindex,
+        junction_counter: int,
+    ) -> None:
+        split_index = (current_index[0], junction_counter)
+        neighbour_indices[previous_index].add(split_index)
+        neighbour_indices[split_index].add(previous_index)
+        next_index, *extra_indices = filter(
+            lambda i: i != previous_index, neighbour_indices[current_index]
+        )
+        if extra_indices:
+            neighbour_indices[next_index].add(split_index)
+            neighbour_indices[split_index].add(next_index)
+            neighbour_indices[next_index].remove(current_index)
+            neighbour_indices[current_index].remove(next_index)
+            return
+        cls._duplicate_border(
+            neighbour_indices=neighbour_indices,
+            previous_index=split_index,
+            current_index=next_index,
+            junction_counter=junction_counter,
+        )
+
     def find_label_border_polygonal_chains(
         self, label: Label
     ) -> typing.Iterator[PolygonalChain]:
-        segments = set(self._find_label_border_segments(label))
-        available_chains = collections.deque(
-            PolygonalChain(segment.vertex_indices) for segment in segments
-        )
-        # irrespective of its poor performance,
-        # we keep this approach since it's easy to read and fast enough
-        while available_chains:
-            chain = available_chains.pop()
-            last_chains_len = None
-            while last_chains_len != len(available_chains):
-                last_chains_len = len(available_chains)
-                checked_chains = (
-                    collections.deque()
-                )  # type: typing.Deque[PolygonalChain]
-                while available_chains:
-                    potential_neighbour = available_chains.pop()
-                    try:
-                        chain.connect(potential_neighbour)
-                    except PolygonalChainsNotOverlapingError:
-                        checked_chains.append(potential_neighbour)
-                available_chains = checked_chains
-            assert all((segment in segments) for segment in chain.segments())
-            yield chain
+        neighbour_indices = collections.defaultdict(
+            set
+        )  # type: typing.DefaultDict[_VertexSubindex, typing.Set[_VertexSubindex]] # type: ignore
+        for segment in self._find_label_border_segments(label):
+            vertex_indices = [(i, 0) for i in segment.vertex_indices]
+            neighbour_indices[vertex_indices[0]].add(vertex_indices[1])
+            neighbour_indices[vertex_indices[1]].add(vertex_indices[0])
+        junction_counter = 0
+        found_leaf = True
+        while found_leaf:
+            found_leaf = False
+            for leaf_index, leaf_neighbour_indices in neighbour_indices.items():
+                if len(leaf_neighbour_indices) == 1:
+                    found_leaf = True
+                    junction_counter += 1
+                    self._duplicate_border(
+                        neighbour_indices=neighbour_indices,
+                        previous_index=leaf_index,
+                        # pylint: disable=stop-iteration-return; false positive, has 1 item
+                        current_index=next(iter(leaf_neighbour_indices)),
+                        junction_counter=junction_counter,
+                    )
+                    break
+        assert all(len(n) == 2 for n in neighbour_indices.values()), neighbour_indices
+        while neighbour_indices:
+            # pylint: disable=stop-iteration-return; has >= 1 item
+            chain = collections.deque([next(iter(neighbour_indices.keys()))])
+            chain.append(neighbour_indices[chain[0]].pop())
+            neighbour_indices[chain[1]].remove(chain[0])
+            while chain[0] != chain[-1]:
+                previous_index = chain[-1]
+                next_index = neighbour_indices[previous_index].pop()
+                neighbour_indices[next_index].remove(previous_index)
+                chain.append(next_index)
+                assert not neighbour_indices[previous_index], neighbour_indices[
+                    previous_index
+                ]
+                del neighbour_indices[previous_index]
+            assert not neighbour_indices[chain[0]], neighbour_indices[chain[0]]
+            del neighbour_indices[chain[0]]
+            chain.pop()
+            yield PolygonalChain(v[0] for v in chain)
 
     def _unused_vertices(self) -> typing.Set[int]:
         vertex_indices = set(range(len(self.vertices)))
