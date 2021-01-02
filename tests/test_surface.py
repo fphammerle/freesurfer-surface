@@ -485,7 +485,7 @@ def test_find_label_border_polygonal_chains():
     assert len(vertex_indices) == 418
     min_index = vertex_indices.index(min(vertex_indices))
     vertex_indices_normalized = vertex_indices[min_index:] + vertex_indices[:min_index]
-    if vertex_indices_normalized[-1] > vertex_indices_normalized[1]:
+    if vertex_indices_normalized[-1] < vertex_indices_normalized[1]:
         vertex_indices_normalized.reverse()
     assert vertex_indices_normalized[346:353] == [
         63264,

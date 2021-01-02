@@ -190,6 +190,14 @@ class PolygonalChain:
             vertex_indices
         )  # type: typing.Deque[int]
 
+    def normalized(self) -> "PolygonalChain":
+        vertex_indices = list(self.vertex_indices)
+        min_index = vertex_indices.index(min(vertex_indices))
+        indices_min_first = vertex_indices[min_index:] + vertex_indices[:min_index]
+        if indices_min_first[1] < indices_min_first[-1]:
+            return PolygonalChain(indices_min_first)
+        return PolygonalChain(indices_min_first[0:1] + indices_min_first[-1:0:-1])
+
     def __eq__(self, other: object) -> bool:
         return (
             isinstance(other, PolygonalChain)

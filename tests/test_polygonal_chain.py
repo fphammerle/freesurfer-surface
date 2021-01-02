@@ -18,6 +18,28 @@ def test_reassign_vertex_indices():
     assert tuple(chain.vertex_indices) == (1, 2, 3, 4)
 
 
+@pytest.mark.parametrize(
+    ("indices_init", "indices_normalized"),
+    (
+        ([0, 3], [0, 3]),
+        ([3, 0], [0, 3]),
+        ([0, 3, 2, 4], [0, 3, 2, 4]),
+        ([0, 4, 2, 3], [0, 3, 2, 4]),
+        ([2, 3, 0, 4], [0, 3, 2, 4]),
+        ([2, 4, 0, 3], [0, 3, 2, 4]),
+        ([3, 0, 4, 2], [0, 3, 2, 4]),
+        ([3, 2, 4, 0], [0, 3, 2, 4]),
+        ([4, 0, 3, 2], [0, 3, 2, 4]),
+        ([4, 2, 3, 0], [0, 3, 2, 4]),
+    ),
+)
+def test_normalized(indices_init, indices_normalized):
+    assert (
+        list(PolygonalChain(indices_init).normalized().vertex_indices)
+        == indices_normalized
+    )
+
+
 def test_eq():
     assert PolygonalChain((0, 1, 2)) == PolygonalChain((0, 1, 2))
     # pylint: disable=unneeded-not
@@ -57,10 +79,7 @@ def test_connect(vertex_indices_a, vertex_indices_b, expected_vertex_indices):
 
 
 @pytest.mark.parametrize(
-    ("vertex_indices_a", "vertex_indices_b"),
-    [
-        ((1, 2, 3), (2, 4)),
-    ],
+    ("vertex_indices_a", "vertex_indices_b"), [((1, 2, 3), (2, 4))]
 )
 def test_connect_fail(vertex_indices_a, vertex_indices_b):
     chain = PolygonalChain(vertex_indices_a)
@@ -69,11 +88,7 @@ def test_connect_fail(vertex_indices_a, vertex_indices_b):
 
 
 @pytest.mark.parametrize(
-    ("vertex_indices_a", "vertex_indices_b"),
-    [
-        ((1, 2, 3), ()),
-        ((), (3, 4)),
-    ],
+    ("vertex_indices_a", "vertex_indices_b"), [((1, 2, 3), ()), ((), (3, 4))]
 )
 def test_connect_fail_empty(vertex_indices_a, vertex_indices_b):
     chain = PolygonalChain(vertex_indices_a)

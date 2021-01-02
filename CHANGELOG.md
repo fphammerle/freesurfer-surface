@@ -5,8 +5,12 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- method `PolygonalCircuit.normalized()`
+
 ### Fixed
-- `find_label_border_polygonal_chains`: always include vertices along border with single neighbour
+- `PolygonalCircuit.find_label_border_polygonal_chains`:
+  always include vertices along border with single neighbour
   (previously indeterministic behaviour)
 - type hints
 
