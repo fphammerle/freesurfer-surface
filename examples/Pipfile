@@ -11,6 +11,8 @@ notebook = "*"
 # python3.5 compatibility
 # https://github.com/ipython/ipython/commit/0f6d2f42f2a10eeb5f78c57314b2f8cc026aed19#diff-60f61ab7a8d1910d86d9fda2261620314edcae5894d5aaa236b821c7256badd7L232
 ipython = "<7.10.0"
+# https://github.com/jupyter/nbconvert/commit/e87b847b23e1ae56461f7a7b7d54c44285ce91f1#diff-60f61ab7a8d1910d86d9fda2261620314edcae5894d5aaa236b821c7256badd7L192
+nbconvert = "<6"
 # https://github.com/ipython/traitlets/commit/8c2554364bd80af917aff1a7725a967ab1203fed
 traitlets = "<5"
 
