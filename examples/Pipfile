@@ -13,6 +13,8 @@ notebook = "*"
 ipython = "<7.10.0"
 # https://github.com/jupyter/nbconvert/commit/e87b847b23e1ae56461f7a7b7d54c44285ce91f1#diff-60f61ab7a8d1910d86d9fda2261620314edcae5894d5aaa236b821c7256badd7L192
 nbconvert = "<6"
+# https://github.com/numpy/numpy/commit/fbcb58ca2c17217f5dc85cb669ea651b7799b60c#diff-60f61ab7a8d1910d86d9fda2261620314edcae5894d5aaa236b821c7256badd7R30
+numpy = "<1.19"
 # https://github.com/ipython/traitlets/commit/8c2554364bd80af917aff1a7725a967ab1203fed
 traitlets = "<5"
 
