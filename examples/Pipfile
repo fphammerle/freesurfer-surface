@@ -8,6 +8,12 @@ freesurfer-surface = {editable = true, path = "./.."}
 pandas = "*"
 notebook = "*"
 
+# python3.5 compatibility
+# https://github.com/ipython/ipython/commit/0f6d2f42f2a10eeb5f78c57314b2f8cc026aed19#diff-60f61ab7a8d1910d86d9fda2261620314edcae5894d5aaa236b821c7256badd7L232
+ipython = "<7.10.0"
+# https://github.com/ipython/traitlets/commit/8c2554364bd80af917aff1a7725a967ab1203fed
+traitlets = "<5"
+
 [dev-packages]
 
 [requires]
