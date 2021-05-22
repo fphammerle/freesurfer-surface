@@ -19,6 +19,8 @@ import os
 
 import setuptools
 
+_REPO_URL = "https://github.com/fphammerle/freesurfer-surface"
+
 with open("README.rst", "r") as readme:
     LONG_DESCRIPTION = readme.read()
 
@@ -36,7 +38,8 @@ setuptools.setup(
     long_description=LONG_DESCRIPTION,
     author="Fabian Peter Hammerle",
     author_email="fabian@hammerle.me",
-    url="https://github.com/fphammerle/freesurfer-surface",
+    url=_REPO_URL,
+    project_urls={"Changelog": _REPO_URL + "/blob/master/CHANGELOG.md"},
     license="GPLv3+",
     keywords=[
         "brain",

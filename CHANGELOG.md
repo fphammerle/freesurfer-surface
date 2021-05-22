@@ -5,12 +5,14 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Added
+- package metadata: added link to changelog
 
 ## [2.0.0] - 2021-05-22
 ### Removed
 - compatibility with `python3.5`
 
-## Changed
+### Changed
 - added default value for `creator` to fix `TypeError` in `write_triangular` when unset
 - `write_triangular`: raise descriptive `ValueError` when missing `volume_geometry_info`
   (instead of `TypeError`)
