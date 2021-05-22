@@ -5,6 +5,16 @@ The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
 ## [Unreleased]
+### Removed
+- compatibility with `python3.5`
+
+### Fixed
+- added default value for `creator` to fix `TypeError` in `write_triangular` when unset
+- `write_triangular`: raise descriptive `ValueError` when missing `volume_geometry_info`
+  (instead of unexpected `TypeError`)
+- `find_label_border_polygonal_chains`: raise descriptive `RuntimeError`
+  when annotation was not loaded (instead of unexpected `TypeError`)
+- fixed type hints
 
 ## [1.2.0] - 2021-01-02
 ### Added

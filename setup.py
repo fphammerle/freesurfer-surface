@@ -29,7 +29,7 @@ setuptools.setup(
         # `version` triggers pylint C0103
         # newline after import to fix pylint C0321/multiple-statements
         "write_to_template": "import typing\n"
-        + "__version__ = '{version}' # type: typing.Optional[str]\n",
+        + "__version__: typing.Optional[str] = '{version}'\n",
     },
     description="Python Library to Read and Write Surface Files"
     " in Freesurfer's TriangularSurface Format",
@@ -52,7 +52,7 @@ setuptools.setup(
         "Development Status :: 3 - Alpha",
         "Intended Audience :: Healthcare Industry",
         "Intended Audience :: Science/Research",
-        "Programming Language :: Python :: 3.5",
+        # .github/workflows/python.yml
         "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
@@ -68,7 +68,7 @@ setuptools.setup(
             "unite-freesurfer-surfaces = freesurfer_surface.__main__:unite_surfaces",
         ]
     },
-    python_requires=">=3.5",
+    python_requires=">=3.6",
     install_requires=["numpy<2"],
     setup_requires=["setuptools_scm"],
     tests_require=["pytest<5"],

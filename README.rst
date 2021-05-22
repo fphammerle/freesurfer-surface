@@ -45,7 +45,7 @@ Read Surface File
     print('coordinates of vertex #0:', (vertex_0.right, vertex_0.anterior, vertex_0.superior))
 
     for triangle_index, triangle in enumerate(surface.triangles[:4]):
-        print('\ntriangle #{}:'.format(triangle_index))
+        print(f'\ntriangle #{triangle_index}:')
         print('vertex indices:', triangle.vertex_indices)
         print('vertex coordinates:')
         for vertex in surface.select_vertices(triangle.vertex_indices):

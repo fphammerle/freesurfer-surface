@@ -100,6 +100,45 @@ def test_triangular_strftime(creation_datetime, expected_str):
     assert expected_str == Surface._triangular_strftime(creation_datetime)
 
 
+def test_write_triangular_missing_geometry(tmpdir):
+    surface = Surface()
+    with pytest.raises(ValueError, match=r"\bvolume_geometry_info\b"):
+        surface.write_triangular(tmpdir.join("surface").strpath)
+
+
+def test_write_triangular_empty(tmpdir):
+    surface = Surface()
+    surface.volume_geometry_info = (
+        b"valid = 1  # volume info valid\n",
+        b"filename = ../mri/filled-pretess255.mgz\n",
+        b"volume = 256 256 256\n",
+        b"voxelsize = 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00\n",
+        b"xras   = -1.000000000000000e+00 0.000000000000000e+00 1.862645149230957e-09\n",
+        b"yras   = 0.000000000000000e+00 -6.655682227574289e-09 -1.000000000000000e+00\n",
+        b"zras   = 0.000000000000000e+00 1.000000000000000e+00 -8.300048648379743e-09\n",
+        b"cras   = -2.773597717285156e+00 1.566547393798828e+01 -7.504364013671875e+00\n",
+    )
+    output_path = tmpdir.join("surface").strpath
+    surface.write_triangular(
+        output_path,
+        creation_datetime=datetime.datetime(2021, 5, 22, 7, 52, 53),  # timezone-unaware
+    )
+    with open(output_path, "rb") as output_file:
+        assert (
+            output_file.read() == b"\xff\xff\xfe"
+            b"created by pypi.org/project/freesurfer-surface/ on Sat May 22 07:52:53 2021\n\n"
+            b"\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x00\x02\x00\x00\x00\x00\x00\x00\x00\x14"
+            b"valid = 1  # volume info valid\n"
+            b"filename = ../mri/filled-pretess255.mgz\n"
+            b"volume = 256 256 256\n"
+            b"voxelsize = 1.000000000000000e+00 1.000000000000000e+00 1.000000000000000e+00\n"
+            b"xras   = -1.000000000000000e+00 0.000000000000000e+00 1.862645149230957e-09\n"
+            b"yras   = 0.000000000000000e+00 -6.655682227574289e-09 -1.000000000000000e+00\n"
+            b"zras   = 0.000000000000000e+00 1.000000000000000e+00 -8.300048648379743e-09\n"
+            b"cras   = -2.773597717285156e+00 1.566547393798828e+01 -7.504364013671875e+00\n"
+        )
+
+
 def test_read_write_triangular_same(tmpdir):
     surface = Surface.read_triangular(SURFACE_FILE_PATH)
     output_path = tmpdir.join("surface").strpath
@@ -490,6 +529,16 @@ def test__find_label_border_segments_incomplete_annotation():
     )
     border_segments = set(surface._find_label_border_segments(precentral_label))
     assert len(border_segments) == 417
+
+
+def test_find_label_border_polygonal_chains_missing_annotation():
+    surface = Surface.read_triangular(SURFACE_FILE_PATH)
+    annotation = Annotation.read(ANNOTATION_FILE_PATH)
+    (precentral_label,) = filter(
+        lambda l: l.name == "precentral", annotation.labels.values()
+    )
+    with pytest.raises(RuntimeError, match=r"\bload_annotation_file\b"):
+        next(surface.find_label_border_polygonal_chains(precentral_label))
 
 
 def test_find_label_border_polygonal_chains():
