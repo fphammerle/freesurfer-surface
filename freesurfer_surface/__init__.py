@@ -669,11 +669,11 @@ class Surface:
             del self.vertices[vertex_index]
             vertex_index_conversion[vertex_index] -= 1
         vertex_index_conversion = numpy.cumsum(vertex_index_conversion)
-        for triangle_index in range(len(self.triangles)):
+        for triangle_index, triangle in enumerate(self.triangles):
             self.triangles[triangle_index] = Triangle(
                 map(
                     lambda i: i + int(vertex_index_conversion[i]),
-                    self.triangles[triangle_index].vertex_indices,
+                    triangle.vertex_indices,
                 )
             )
 
