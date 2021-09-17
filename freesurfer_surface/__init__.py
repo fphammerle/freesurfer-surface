@@ -116,12 +116,12 @@ class Vertex(numpy.ndarray):
 
     def __format_coords(self) -> str:
         return ", ".join(
-            "{}={}".format(name, getattr(self, name))
+            f"{name}={getattr(self, name)}"
             for name in ["right", "anterior", "superior"]
         )
 
     def __repr__(self) -> str:
-        return "{}({})".format(type(self).__name__, self.__format_coords())
+        return f"{type(self).__name__}({self.__format_coords()})"
 
     def distance_mm(
         self, others: typing.Union["Vertex", typing.Iterable["Vertex"], numpy.ndarray]
@@ -185,7 +185,7 @@ class LineSegment(PolygonalCircuit):
         assert len(self.vertex_indices) == 2
 
     def __repr__(self) -> str:
-        return "LineSegment(vertex_indices={})".format(self.vertex_indices)
+        return f"LineSegment(vertex_indices={self.vertex_indices})"
 
 
 class Triangle(PolygonalCircuit):
@@ -194,7 +194,7 @@ class Triangle(PolygonalCircuit):
         assert len(self.vertex_indices) == 3
 
     def __repr__(self) -> str:
-        return "Triangle(vertex_indices={})".format(self.vertex_indices)
+        return f"Triangle(vertex_indices={self.vertex_indices})"
 
 
 class PolygonalChainsNotOverlapingError(ValueError):
@@ -220,7 +220,7 @@ class PolygonalChain:
         )
 
     def __repr__(self) -> str:
-        return "PolygonalChain(vertex_indices={})".format(tuple(self.vertex_indices))
+        return f"PolygonalChain(vertex_indices={tuple(self.vertex_indices)})"
 
     def connect(self, other: "PolygonalChain") -> None:
         if self.vertex_indices[-1] == other.vertex_indices[0]:
@@ -277,11 +277,11 @@ class Label:
 
     @property
     def hex_color_code(self) -> str:
-        return "#{:02x}{:02x}{:02x}".format(self.red, self.green, self.blue)
+        return f"#{self.red:02x}{self.green:02x}{self.blue:02x}"
 
     def __str__(self) -> str:
-        return "Label(name={}, index={}, color={})".format(
-            self.name, self.index, self.hex_color_code
+        return (
+            f"Label(name={self.name}, index={self.index}, color={self.hex_color_code})"
         )
 
     def __repr__(self) -> str:
@@ -433,7 +433,7 @@ class Surface:
 
     @classmethod
     def _triangular_strftime(cls, creation_datetime: datetime.datetime) -> bytes:
-        padded_day = "{:>2}".format(creation_datetime.day)
+        padded_day = f"{creation_datetime.day:>2}"
         fmt = cls._DATETIME_FORMAT.replace("%d", padded_day)
         with setlocale("C"):
             return creation_datetime.strftime(fmt).encode()
