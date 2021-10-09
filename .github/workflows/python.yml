@@ -15,11 +15,14 @@ on:
 jobs:
   code-format:
     runs-on: ubuntu-20.04
+    strategy:
+      matrix:
+        python-verison: ['3.9']
     steps:
     - uses: actions/checkout@v1
     - uses: actions/setup-python@v2.2.2
       with:
-        python-version: '3.9'
+        python-version: ${{ matrix.python-version }}
     - run: pip install --upgrade pipenv==2020.8.13
     - run: pipenv install --python "$PYTHON_VERSION" --deploy --dev
       env:
