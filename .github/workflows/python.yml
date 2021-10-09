@@ -90,5 +90,7 @@ jobs:
     # revert line specifying version of python interpreter
     - run: sudo apt-get update
     - run: sudo apt-get install --yes --no-install-recommends patchutils
-    - run: git diff --unified=0 | grepdiff --output-matching=hunk '^   "version":' | patch --reverse
-    - run: git diff --exit-code
+    - run: >-
+        git diff --unified=0
+        | grepdiff --output-matching=hunk '^(   "version":|    "execution": {)'
+        | patch --reverse
