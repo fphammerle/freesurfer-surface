@@ -32,7 +32,7 @@ _VERSION_MODULE_PATH = pathlib.Path(__file__).parent.parent.joinpath(
 def test_version():
     if not _VERSION_MODULE_PATH.exists():
         pytest.skip("package is not installed")
-    assert re.match(r"^\d+\.\d+\.\d+", freesurfer_surface.__version__)
+    assert re.match(r"^\d+\.\d+\.\S+", freesurfer_surface.__version__)
 
 
 def test_version_missing(tmp_path):
