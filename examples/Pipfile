@@ -5,35 +5,28 @@ name = "pypi"
 
 [packages]
 freesurfer-surface = {editable = true, path = "./.."}
-#pandas = "*"
+pandas = "*"
 notebook = "*"
 
-# python3.6 compatibility
-# >   File "/home/runner/.local/share/virtualenvs/examples-hI4yCRi6/lib/python3.6/site-packages/nbclient/client.py", line 13, in <module>
-# >     from async_generator import asynccontextmanager  # type: ignore
-# > ModuleNotFoundError: No module named 'async_generator'
-async_generator = {version = "*", markers = "python_version == '3.6'"}
-# https://github.com/ipython/ipykernel/commit/12db7f9593def374230b505000f07a1168ef7188
-ipykernel = "<6"
-# https://github.com/ipython/ipython/commit/fa00749572b02729f2dbe2c3317100895f2915d6
-ipython = "<7.17"
-# https://github.com/Julian/jsonschema/commit/3fb0576411701b57899cf9c812e32046ddc2adf9
-jsonschema = "<4"
-# https://github.com/jupyter/nbconvert/commit/6f1a56f63a9a8dc8ee5178aa6d918db589b6d439
-nbconvert = "<6.1"
-numpy = "<1.20"
-pandas = "<1.2"
-traitlets = "<5"
-
 # python3.7 compatibility
-# >   File "[...]/lib/python3.7/site-packages/jsonschema/__init__.py", line 33, in <module>
-# >     import importlib_metadata as metadata
-# > ModuleNotFoundError: No module named 'importlib_metadata'
-importlib_metadata = {version = "*", markers = "python_version <= '3.7'"}
-# >   File "[...]/lib/python3.7/site-packages/importlib_metadata/_compat.py", line 16, in <module>
-# >     from typing_extensions import Protocol  # type: ignore
+ipython = "<8"
+numpy = "<1.22"
+
+# python<=3.8 compatibility
+# >   File "[...]/python3.8/site-packages/jsonschema/_utils.py", line 12, in <module>
+# >     import importlib_resources as resources  # type: ignore
+# > ModuleNotFoundError: No module named 'importlib_resources'
+importlib-resources = {markers = "python_version <= '3.8'"}
+# >   File "[...]/python3.8/site-packages/importlib_resources/_compat.py", line 11, in <module>
+# >     from zipp import Path as ZipPath  # type: ignore
+# > ModuleNotFoundError: No module named 'zipp'
+zipp = {markers = "python_version <= '3.8'"}
+
+# python3.10 compatibility
+# >   File "[...]/lib/python3.10/site-packages/mypy/main.py", line 11, in <module>
+# >     from typing_extensions import Final, NoReturn
 # > ModuleNotFoundError: No module named 'typing_extensions'
-typing_extensions = {version = "*", markers = "python_version <= '3.7'"}
+typing-extensions = {markers = ""}
 
 [dev-packages]
 

@@ -145,7 +145,7 @@ class PolygonalCircuit:
 
     def _normalize(self) -> PolygonalCircuit:
         vertex_indices = collections.deque(self.vertex_indices)
-        vertex_indices.rotate(-numpy.argmin(self.vertex_indices))
+        vertex_indices.rotate(int(-numpy.argmin(self.vertex_indices)))
         if len(vertex_indices) > 2 and vertex_indices[-1] < vertex_indices[1]:
             vertex_indices.reverse()
             vertex_indices.rotate(1)
@@ -664,7 +664,7 @@ class Surface:
         return vertex_indices
 
     def remove_unused_vertices(self) -> None:
-        vertex_index_conversion = [0] * len(self.vertices)
+        vertex_index_conversion = numpy.zeros(len(self.vertices), dtype=int)
         for vertex_index in sorted(self._unused_vertices(), reverse=True):
             del self.vertices[vertex_index]
             vertex_index_conversion[vertex_index] -= 1
