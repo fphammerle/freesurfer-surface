@@ -20,6 +20,20 @@ import pytest
 from freesurfer_surface import Label
 
 
+def test_init_missing_argument():
+    with pytest.raises(
+        TypeError, match=r"missing 1 required positional argument: .transparency.$"
+    ):
+        # pylint: disable=no-value-for-parameter
+        Label(index=0, name="test", red=1, green=2, blue=3)
+
+
+def test_eq():
+    kwargs = dict(name="test", red=1, green=2, blue=3, transparency=0)
+    assert Label(index=21, **kwargs) == Label(index=21, **kwargs)
+    assert Label(index=21, **kwargs) != Label(index=42, **kwargs)
+
+
 @pytest.mark.parametrize(
     ("red", "green", "blue", "transparency", "color_code"),
     [

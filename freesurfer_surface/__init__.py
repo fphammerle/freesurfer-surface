@@ -53,9 +53,12 @@ Find Border of Labelled Region
 >>> print(surface.find_label_border_polygonal_chains(region))
 """
 
+from __future__ import annotations
+
 import collections
 import contextlib
 import copy
+import dataclasses
 import datetime
 import itertools
 import locale
@@ -124,7 +127,7 @@ class Vertex(numpy.ndarray):
         return f"{type(self).__name__}({self.__format_coords()})"
 
     def distance_mm(
-        self, others: typing.Union["Vertex", typing.Iterable["Vertex"], numpy.ndarray]
+        self, others: typing.Union[Vertex, typing.Iterable[Vertex], numpy.ndarray]
     ) -> numpy.ndarray:
         if isinstance(others, Vertex):
             others = others.reshape((1, 3))
@@ -140,7 +143,7 @@ class PolygonalCircuit:
     def vertex_indices(self):
         return self._vertex_indices
 
-    def _normalize(self) -> "PolygonalCircuit":
+    def _normalize(self) -> PolygonalCircuit:
         vertex_indices = collections.deque(self.vertex_indices)
         vertex_indices.rotate(-numpy.argmin(self.vertex_indices))
         if len(vertex_indices) > 2 and vertex_indices[-1] < vertex_indices[1]:
@@ -205,7 +208,7 @@ class PolygonalChain:
     def __init__(self, vertex_indices: typing.Iterable[int]):
         self.vertex_indices: typing.Deque[int] = collections.deque(vertex_indices)
 
-    def normalized(self) -> "PolygonalChain":
+    def normalized(self) -> PolygonalChain:
         vertex_indices = list(self.vertex_indices)
         min_index = vertex_indices.index(min(vertex_indices))
         indices_min_first = vertex_indices[min_index:] + vertex_indices[:min_index]
@@ -222,7 +225,7 @@ class PolygonalChain:
     def __repr__(self) -> str:
         return f"PolygonalChain(vertex_indices={tuple(self.vertex_indices)})"
 
-    def connect(self, other: "PolygonalChain") -> None:
+    def connect(self, other: PolygonalChain) -> None:
         if self.vertex_indices[-1] == other.vertex_indices[0]:
             self.vertex_indices.pop()
             self.vertex_indices.extend(other.vertex_indices)
@@ -252,18 +255,15 @@ class PolygonalChain:
         return map(LineSegment, self.adjacent_vertex_indices(2))
 
 
+@dataclasses.dataclass
 class Label:
 
-    # pylint: disable=too-many-arguments
-    def __init__(
-        self, index: int, name: str, red: int, green: int, blue: int, transparency: int
-    ):
-        self.index: int = index
-        self.name: str = name
-        self.red: int = red
-        self.green: int = green
-        self.blue: int = blue
-        self.transparency: int = transparency
+    index: int
+    name: str
+    red: int
+    green: int
+    blue: int
+    transparency: int
 
     @property
     def color_code(self) -> int:

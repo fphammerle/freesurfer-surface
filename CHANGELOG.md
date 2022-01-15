@@ -6,7 +6,11 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 ### Added
+- equals operator for `Label` class
 - package metadata: added link to changelog
+
+### Removed
+- compatibility with `python3.6`
 
 ## [2.0.0] - 2021-05-22
 ### Removed
@@ -79,7 +83,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - `Surface.add_rectangle`: accept 3 or 4 vertex indices (previously only 3)
 
 ### Changed
-- dervice `Vertex` from `numpy.ndarray` (previously `collections.namedtuple`)
+- derive `Vertex` from `numpy.ndarray` (previously `collections.namedtuple`)
 
 ### Fixed
 * `Surface._find_label_border_segments`: failing on incompletely labelled set of vertices

@@ -56,7 +56,6 @@ setuptools.setup(
         "Intended Audience :: Healthcare Industry",
         "Intended Audience :: Science/Research",
         # .github/workflows/python.yml
-        "Programming Language :: Python :: 3.6",
         "Programming Language :: Python :: 3.7",
         "Programming Language :: Python :: 3.8",
         "Programming Language :: Python :: 3.9",
@@ -71,7 +70,8 @@ setuptools.setup(
             "unite-freesurfer-surfaces = freesurfer_surface.__main__:unite_surfaces",
         ]
     },
-    python_requires=">=3.6",
+    # >=3.7 for postponed evaluation of type annotations (PEP563) & dataclass
+    python_requires=">=3.7",
     install_requires=["numpy<2"],
     setup_requires=["setuptools_scm"],
     tests_require=["pytest<5"],
