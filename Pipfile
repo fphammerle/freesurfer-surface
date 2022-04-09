@@ -10,7 +10,7 @@ freesurfer-surface = {editable = true, path = "."}
 numpy = "<1.22"
 
 [dev-packages]
-black = "==21.12b0"
+black = "*"
 mypy = "*"
 pylint = "*"
 pylint-import-requirements = "*"
