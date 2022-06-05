@@ -204,7 +204,7 @@ class PolygonalChainsNotOverlapingError(ValueError):
     pass
 
 
-class PolygonalChain:
+class PolygonalChain:  # pylint: disable=eq-without-hash; mutable
     def __init__(self, vertex_indices: typing.Iterable[int]):
         self.vertex_indices: typing.Deque[int] = collections.deque(vertex_indices)
 
@@ -415,7 +415,7 @@ class Surface:
         )
         assert stream.read(4) == self._TAG_OLD_USEREALRAS
         (using_old_real_ras,) = struct.unpack(">I", stream.read(4))
-        assert using_old_real_ras in [0, 1], using_old_real_ras
+        assert using_old_real_ras in {0, 1}, using_old_real_ras
         self.using_old_real_ras = bool(using_old_real_ras)
         assert stream.read(4) == self._TAG_OLD_SURF_GEOM
         # writeVolGeom
