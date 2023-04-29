@@ -3,8 +3,8 @@ freesurfer-surface
 
 .. image:: https://img.shields.io/badge/code%20style-black-000000.svg
    :target: https://github.com/psf/black
-.. image:: https://travis-ci.org/fphammerle/freesurfer-surface.svg?branch=master
-   :target: https://travis-ci.org/fphammerle/freesurfer-surface
+.. image:: https://github.com/fphammerle/freesurfer-surface/workflows/tests/badge.svg
+   :target: https://github.com/fphammerle/freesurfer-surface/actions
 .. image:: https://ipfs.io/ipfs/QmP8k5H4MkfspFxQxdL2kEZ4QQWQjF8xwPYD35KvNH4CA6/20230429T090002+0200/s3.amazonaws.com/assets.coveralls.io/badges/coveralls_100.svg
    :target: https://github.com/fphammerle/freesurfer-surface/actions
 .. image:: https://img.shields.io/pypi/v/freesurfer-surface.svg
